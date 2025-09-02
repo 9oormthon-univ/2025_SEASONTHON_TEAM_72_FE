@@ -60,10 +60,13 @@ const DotWrapper = styled.div`
   align-items: center;
   gap: 8px;
   position: absolute;
-  top: 260px;
+  top: 500px;
   left: 0;
   right: 0;
   bottom: 0;
+  height: fit-content;
+  z-index: 0; 
+  
 `;
 
 const Dot = styled.button<{ active: boolean }>`
