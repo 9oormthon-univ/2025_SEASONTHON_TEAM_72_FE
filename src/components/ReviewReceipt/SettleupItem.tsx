@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import SettleupDrawer, { type UserSelection } from "./SettleupDrawer";
+import type { ItemData } from "./SettleupSection";
 
-interface SettleupItemProps {
-  name: string;
-  quantity: number;
-  price: number;
-  selections: UserSelection[]; // 각 사용자 선택 수량
-}
-
-const SettleupItem: React.FC<SettleupItemProps> = ({
+const SettleupItem: React.FC<ItemData> = ({
+  status,
   name,
   quantity,
   price,
   selections,
 }) => {
+  const MYNAME = "내이름";
   const [open, setOpen] = useState(false);
-  const totalSelected = selections.reduce<number>((a, c) => a + c.amount, 0);
+  const myAmount = selections
+    .filter((s) => s.user === MYNAME)
+    .reduce<number>((a, c) => a + c.amount, 0);
+  const formatAmount = (v: number) => {
+    if (Number.isInteger(v)) return v.toString();
+    return v.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+  };
+  const displayAmount = formatAmount(myAmount);
   return (
     <>
       <ItemWrapper onClick={() => setOpen(true)}>
@@ -27,7 +30,7 @@ const SettleupItem: React.FC<SettleupItemProps> = ({
             <span>{price.toLocaleString()}원</span>
           </SubLine>
         </LeftTexts>
-        <Circle>{totalSelected.toFixed(2)} 개</Circle>
+        <Circle $status={status}>{displayAmount}개</Circle>
       </ItemWrapper>
       <SettleupDrawer
         open={open}
@@ -82,17 +85,29 @@ const SubLine = styled.div`
   font-weight: 500;
 `;
 
-const Circle = styled.div`
-  min-width: 36px;
-  height: 36px;
+const Circle = styled.div<{ $status: string }>`
+  min-width: 38px;
+  min-height: 38px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: #f44336;
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 9px;
   font-weight: 600;
+  box-sizing: border-box;
+  padding: 0 4px;
+  ${({ $status }) => {
+    switch ($status) {
+      case "완료":
+        return `background:#ffffff;color:#f44336;border:1px solid #f44336;`;
+      case "미완료":
+        return `background:#fdd9d7;color:#f44336;border:1px solid #fdd9d7;`;
+      case "초과":
+        return `background:#f44336;color:#ffffff;border:1px solid #f44336;`;
+      default:
+        return `background:#e0e0e0;color:#333;border:1px solid #ccc;`;
+    }
+  }}
 `;
-
-// Drawer 관련 스타일/로직은 SettleupDrawer 컴포넌트로 분리

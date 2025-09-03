@@ -2,39 +2,56 @@ import styled from "styled-components";
 import SettleupItem from "./SettleupItem";
 import { type UserSelection } from "./SettleupDrawer";
 
-const mockSelections: Record<string, UserSelection[]> = {
-  콜라: [
-    { user: "사용자1", amount: 0.2 },
-    { user: "사용자2", amount: 0.7 },
-  ],
-  사이다: [
-    { user: "사용자1", amount: 1 },
-    { user: "사용자3", amount: 0.5 },
-  ],
-  양상추: [{ user: "사용자2", amount: 0.4 }],
-};
+export interface ItemData {
+  status: string;
+  name: string;
+  quantity: number;
+  price: number;
+  selections: UserSelection[];
+}
+
+const mockData: ItemData[] = [
+  {
+    status: "완료",
+    name: "콜라",
+    quantity: 2,
+    price: 1500,
+    selections: [
+      { user: "내이름", amount: 0.2 },
+      { user: "사용자1", amount: 0.2 },
+      { user: "사용자2", amount: 0.7 },
+    ],
+  },
+  {
+    status: "미완료",
+    name: "사이다",
+    quantity: 3,
+    price: 1500,
+    selections: [
+      { user: "내이름", amount: 0.25 },
+      { user: "사용자1", amount: 1 },
+      { user: "사용자3", amount: 0.25 },
+    ],
+  },
+  {
+    status: "초과",
+    name: "양상추",
+    quantity: 2,
+    price: 1680,
+    selections: [
+      { user: "내이름", amount: 0.2 },
+      { user: "사용자1", amount: 1 },
+      { user: "사용자2", amount: 1 },
+      { user: "사용자3", amount: 0.5 },],
+  },
+];
 
 const SettleupSection = () => {
   return (
     <SettleupSectionLayout>
-      <SettleupItem
-        name="콜라"
-        quantity={2}
-        price={1500}
-        selections={mockSelections["콜라"]}
-      />
-      <SettleupItem
-        name="사이다"
-        quantity={3}
-        price={1500}
-        selections={mockSelections["사이다"]}
-      />
-      <SettleupItem
-        name="양상추"
-        quantity={1}
-        price={1680}
-        selections={mockSelections["양상추"]}
-      />
+      {mockData.map((item) => (
+        <SettleupItem key={item.name} {...item} />
+      ))}
     </SettleupSectionLayout>
   );
 };

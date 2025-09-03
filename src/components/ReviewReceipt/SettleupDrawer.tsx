@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
+import SelectionAdjuster from "./SelectionAdjuster";
+import { BsXLg } from "react-icons/bs";
 
 export interface UserSelection {
   user: string;
-  amount: number; // 선택한 수량 (부분 가능)
+  amount: number;
 }
 
 export interface SettleupDrawerProps {
@@ -25,6 +27,23 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   onClose,
 }) => {
   const [portalEl, setPortalEl] = React.useState<HTMLElement | null>(null);
+  const [tempValue, setTempValue] = useState<number>(
+    () => selections[0]?.amount ?? 0
+  );
+
+  const handleTempChange = (v: number) => {
+    setTempValue(v);
+  };
+
+  const commitSave = () => {
+    selections[0].amount = tempValue;
+  };
+
+  useEffect(() => {
+    if (open) {
+      setTempValue(selections[0]?.amount ?? 0);
+    }
+  }, [open, selections]);
 
   useEffect(() => {
     let el = document.getElementById(
@@ -49,8 +68,6 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
 
   if (!portalEl) return null;
 
-  const totalSelected = selections.reduce((acc, cur) => acc + cur.amount, 0);
-  const unitPrice = price / quantity; // 단가 (부분 수량 금액 계산용)
   return createPortal(
     <>
       {open && <TransparentOverlay aria-hidden onClick={onClose} />}
@@ -63,33 +80,38 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
       >
         <Inner onClick={(e) => e.stopPropagation()}>
           <HeaderRow>
-            <Title>{name}</Title>
-            <Meta>
-              {quantity}개 · {price.toLocaleString()}원
-            </Meta>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <Title>{name}</Title>
+              <QuantityTag>{quantity}개</QuantityTag>
+            </div>
+            <HeaderActions>
+              <SaveButton type="button" onClick={commitSave}>
+                저장
+              </SaveButton>
+              <HeaderButton type="button" onClick={onClose} />
+            </HeaderActions>
           </HeaderRow>
-          <Divider />
+          <PriceP>{price.toLocaleString()}원</PriceP>
           <List>
             {selections.map((sel) => {
-              const pricePortion = sel.amount * unitPrice;
+              const formatted = Number.isInteger(sel.amount)
+                ? sel.amount.toString()
+                : sel.amount.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
               return (
                 <ListItem key={sel.user}>
                   <UserName>{sel.user}</UserName>
-                  <Amounts>
-                    <span>{sel.amount.toFixed(2)}개</span>
-                    <span>{Math.round(pricePortion).toLocaleString()}원</span>
-                  </Amounts>
+                  <AmountTag>{formatted}개</AmountTag>
                 </ListItem>
               );
             })}
           </List>
-          <TotalBar>
-            <span>합계 선택: {totalSelected.toFixed(2)}개</span>
-            <span>
-              {Math.round(totalSelected * unitPrice).toLocaleString()}원 /{" "}
-              {price.toLocaleString()}원
-            </span>
-          </TotalBar>
+          <AdjusterWrapper>
+            <SelectionAdjuster
+              initialValue={tempValue}
+              max={quantity}
+              onChange={handleTempChange}
+            />
+          </AdjusterWrapper>
         </Inner>
       </DrawerContainer>
     </>,
@@ -116,14 +138,15 @@ const DrawerContainer = styled.div<{ open: boolean }>`
   background: #ffffff;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: ${({ open }) =>
+    open ? "2px -2px 15px rgba(0, 0, 0, 0.1)" : "none"};
   transform: translateY(${({ open }) => (open ? "0%" : "100%")});
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   animation: ${({ open }) => (open ? slideUp : "none")} 0.35s;
   z-index: 1001;
   display: flex;
   flex-direction: column;
-  padding: 0 16px 16px;
+  padding: 0 20px 20px;
   box-sizing: border-box;
   height: 260px; /* 기존 212 + 내부 영역 확장 */
 `;
@@ -132,14 +155,16 @@ const Inner = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 12px;
   padding-top: 14px;
 `;
 
 const HeaderRow = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: fit-content;
+  gap: 6px;
 `;
 
 const Title = styled.h3`
@@ -148,15 +173,20 @@ const Title = styled.h3`
   margin: 0;
 `;
 
-const Meta = styled.div`
-  font-size: 11px;
+const QuantityTag = styled.div`
+  width: fit-content;
+  padding: 0 5px;
+  font-size: 9px;
   font-weight: 500;
-  color: #666;
+  color: #fff;
+  background-color: black;
+  border-radius: 20px;
 `;
 
-const Divider = styled.div`
-  height: 1px;
-  background: #eee;
+const PriceP = styled.p`
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 130%;
 `;
 
 const List = styled.ul`
@@ -167,43 +197,63 @@ const List = styled.ul`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 6px;
 `;
 
 const ListItem = styled.li`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
+  gap: 8px;
   font-size: 12px;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 8px 12px;
 `;
 
 const UserName = styled.span`
   font-weight: 600;
 `;
 
-const Amounts = styled.div`
-  display: flex;
-  gap: 12px;
-  font-weight: 500;
+const AmountTag = styled.p`
+  font-size: 8px;
+  background-color: #fdd9d7;
+  color: #f44336;
+  width: fit-content;
+  padding: 2px 4px;
+  border-radius: 20px;
+  font-weight: 600;
 `;
 
-const TotalBar = styled.div`
+const AdjusterWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  font-size: 11px;
+  justify-content: center;
+  margin-top: 8px;
+  padding-bottom: 4px;
+`;
+
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const SaveButton = styled.button`
+  all: unset;
+  cursor: pointer;
+  font-size: 14px;
   font-weight: 600;
-  background: #f5f5f5;
-  padding: 8px 12px;
-  border-radius: 10px;
+  color: #000;
+  padding: 2px 4px;
+`;
+const HeaderButton = styled(BsXLg)`
+  all: unset;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  color: #000;
+  padding: 2px 4px;
 `;
 
 const TransparentOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: transparent; /* no dim */
+  background: transparent;
   z-index: 1000;
 `;
