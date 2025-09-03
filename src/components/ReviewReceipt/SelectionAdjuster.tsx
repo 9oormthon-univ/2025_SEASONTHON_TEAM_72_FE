@@ -4,10 +4,9 @@ import styled from "styled-components";
 interface SelectionAdjusterProps {
   initialValue: number;
   max: number; // quantity
-  onChange: (value: number) => void; // 실시간 변경 전달
+  onChange: (value: number) => void;
 }
 
-// 350 x 40, 배경 #d9d9d9, radius 10px
 const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
   initialValue,
   max,
@@ -25,10 +24,14 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
     }
   }, [editing]);
 
+  // 초기값이 외부에서 변경되었을 때(예: Drawer 재열림) 편집 중이 아니면 동기화
+  useEffect(() => {
+    if (!editing) setValue(initialValue);
+  }, [initialValue, editing]);
+
   const clamp = (v: number) => {
     if (Number.isNaN(v) || v < 0) return 0;
     if (v > max) v = max;
-    // 소수 둘째 자리까지 유지하되 표시 시엔 trailing zero 제거
     const rounded = Math.round(v * 100) / 100;
     return rounded;
   };
@@ -36,9 +39,10 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
   const stepChange = (delta: number) => {
     setValue((prev) => {
       const next = prev + delta;
-      // 0.5 단위 스냅
       const snapped = Math.round(next / 0.5) * 0.5;
-      return clamp(snapped);
+      const finalVal = clamp(snapped);
+      onChange(finalVal);
+      return finalVal;
     });
   };
 
@@ -47,7 +51,8 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
     if (Number.isNaN(raw)) {
       setValue(0);
     } else {
-      setValue(clamp(raw));
+      const v = clamp(raw);
+      setValue(v);
     }
   };
 
@@ -111,7 +116,6 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
 
 export default SelectionAdjuster;
 
-// styles
 const Wrapper = styled.div`
   width: 350px;
   height: 40px;
@@ -123,8 +127,6 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   gap: 2px;
 `;
-
-// 상단 액션 제거 -> Drawer로 이동
 
 const ControlRow = styled.div`
   flex: 1;
