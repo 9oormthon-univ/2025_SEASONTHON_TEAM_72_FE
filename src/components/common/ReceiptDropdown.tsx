@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 interface ReceiptItem {
   name: string;
@@ -35,7 +35,7 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({ data }) => {
         <span>{data.user}</span>
       </DropdownCard>
       {open && (
-        <DropdownContent>
+        <DropdownContent role="region" aria-label={`${data.user} 영수증 상세`}>
           <table>
             <thead>
               <tr>
@@ -88,12 +88,20 @@ const DropdownCard = styled.div<{ isOpen: boolean }>`
   cursor: pointer;
 `;
 
+const slideDown = keyframes`
+  from { transform: translateY(-4px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+`;
+
 const DropdownContent = styled.div`
   width: 320px;
   background: #fff;
   border: 0 1px 1px 1px solid #eee;
   border-radius: 0 0 5px 5px;
   padding: 6px 16px 12px 16px;
+  animation: ${slideDown} 0.28s ease;
+  transform-origin: top center;
+  will-change: transform, opacity;
   table {
     width: 100%;
     border-collapse: collapse;
