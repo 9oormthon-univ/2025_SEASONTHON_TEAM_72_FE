@@ -1,21 +1,27 @@
 import styled from "styled-components";
+import SettlementStartImage from "./SettlementStartImage";
 
 const SettlementStartContent = () => {
   return (
     <SettlementStartLayout>
-      <Title>새로운 정산을 시작해볼까요?</Title>
-      <Subtitle>정산할 품목을 어떤 방식으로 가져올지 정해주세요.</Subtitle>
-      <ButtonContainer>
-        <ActionButton>
-          <ButtonText>영수증 불러오기</ButtonText>
-        </ActionButton>
-        <ActionButton>
-          <ButtonText>직접 작성하기</ButtonText>
-        </ActionButton>
-      </ButtonContainer>
-      <ParticipationCode>
-        <CodeText>참여코드를 갖고 계신가요?</CodeText>
-      </ParticipationCode>
+      <TopSection>
+        <Title>새로운 정산을 시작해볼까요?</Title>
+        <Subtitle>정산할 품목을 어떤 방식으로 가져올지 정해주세요.</Subtitle>
+        <ImageContainer>
+          <SettlementStartImage />
+        </ImageContainer>
+      </TopSection>
+        <ButtonContainer>
+          <ActionButton>
+            <ButtonText>영수증 불러오기</ButtonText>
+          </ActionButton>
+          <ActionButton>
+            <ButtonText>직접 작성하기</ButtonText>
+          </ActionButton>
+        </ButtonContainer>
+        <ParticipationCode>
+          <CodeText>참여코드를 갖고 계신가요?</CodeText>
+        </ParticipationCode>
     </SettlementStartLayout>
   );
 };
@@ -27,38 +33,54 @@ const SettlementStartLayout = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   min-height: 100vh;
-  padding: 290px 20px;
 `;
 
+const TopSection = styled.div`
+margin-top: 100px;
+display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+`;
+
+
 const Title = styled.h1`
-  font-family: NanumSquare_ac;
-  font-weight: 800;
-  font-size: 20px;
-  line-height: 130%;
+  color: #000;
   text-align: center;
-  color: #000000;
-  margin-bottom: 16px;
+  font-family: NanumSquare_ac;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 130%;
 `;
 
 const Subtitle = styled.p`
-  font-family: NanumSquare_ac;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 130%;
+  color: #000;
   text-align: center;
-  color: #000000;
-  margin-bottom: 60px;
+  font-family: NanumSquare_ac;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%; 
+`;
+
+const ImageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 70px;
+  margin-bottom: 180px;
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
   max-width: 352px;
-  margin-top: 180px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 `;
 
 const ActionButton = styled.button`
@@ -67,7 +89,7 @@ const ActionButton = styled.button`
   background-color: #F44336;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
   display: flex;
@@ -80,11 +102,13 @@ const ActionButton = styled.button`
 `;
 
 const ButtonText = styled.span`
-  font-family: NanumSquare_ac;
-  font-weight: 800;
-  font-size: 16px;
-  line-height: 130%;
+  color: #FFF;
   text-align: center;
+  font-family: NanumSquare_ac;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 130%; 
 `;
 
 const ParticipationCode = styled.div`
@@ -96,10 +120,12 @@ const ParticipationCode = styled.div`
 `;
 
 const CodeText = styled.span`
-  font-family: NanumSquare_ac;
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 130%;
+  color: #6B6B6B;
   text-align: center;
+  font-family: NanumSquare_ac;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%; 
   text-decoration: underline;
 `;
