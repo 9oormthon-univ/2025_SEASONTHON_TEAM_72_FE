@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import SettleupDrawer, { type UserSelection } from "./SettleupDrawer";
-import type { ItemData } from "./SettleupSection";
+import SettleupDrawer from "./SettleupDrawer";
+import type { ItemData } from "../../mocks/settleupData";
 
-const SettleupItem: React.FC<ItemData> = ({
+interface SettleupItemProps extends ItemData {
+  onUpdateMyAmount: (amount: number) => void;
+}
+
+const SettleupItem: React.FC<SettleupItemProps> = ({
   status,
   name,
   quantity,
   price,
   selections,
+  onUpdateMyAmount,
 }) => {
   const MYNAME = "내이름";
   const [open, setOpen] = useState(false);
@@ -39,6 +44,7 @@ const SettleupItem: React.FC<ItemData> = ({
         quantity={quantity}
         price={price}
         selections={selections}
+        onSave={(val: number) => onUpdateMyAmount(val)}
       />
     </>
   );

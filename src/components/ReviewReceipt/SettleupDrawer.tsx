@@ -16,6 +16,7 @@ export interface SettleupDrawerProps {
   price: number;
   selections: UserSelection[];
   onClose: () => void;
+  onSave?: (newAmount: number) => void; // 현재 사용자 선택 값 저장 콜백
 }
 
 const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
@@ -25,10 +26,13 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   price,
   selections,
   onClose,
+  onSave,
 }) => {
+  const MYNAME = "내이름";
   const [portalEl, setPortalEl] = React.useState<HTMLElement | null>(null);
+  const mySelection = selections.find((s) => s.user === MYNAME);
   const [tempValue, setTempValue] = useState<number>(
-    () => selections[0]?.amount ?? 0
+    () => mySelection?.amount ?? 0
   );
 
   const handleTempChange = (v: number) => {
@@ -36,12 +40,14 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   };
 
   const commitSave = () => {
-    selections[0].amount = tempValue;
+    if (onSave) onSave(tempValue);
+    onClose();
   };
 
   useEffect(() => {
     if (open) {
-      setTempValue(selections[0]?.amount ?? 0);
+      const latest = selections.find((s) => s.user === MYNAME)?.amount ?? 0;
+      setTempValue(latest);
     }
   }, [open, selections]);
 
@@ -93,17 +99,19 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
           </HeaderRow>
           <PriceP>{price.toLocaleString()}원</PriceP>
           <List>
-            {selections.map((sel) => {
-              const formatted = Number.isInteger(sel.amount)
-                ? sel.amount.toString()
-                : sel.amount.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
-              return (
-                <ListItem key={sel.user}>
-                  <UserName>{sel.user}</UserName>
-                  <AmountTag>{formatted}개</AmountTag>
-                </ListItem>
-              );
-            })}
+            {selections
+              .filter((sel) => sel.user !== MYNAME)
+              .map((sel) => {
+                const formatted = Number.isInteger(sel.amount)
+                  ? sel.amount.toString()
+                  : sel.amount.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+                return (
+                  <ListItem key={sel.user}>
+                    <UserName>{sel.user}</UserName>
+                    <AmountTag>{formatted}개</AmountTag>
+                  </ListItem>
+                );
+              })}
           </List>
           <AdjusterWrapper>
             <SelectionAdjuster
@@ -148,7 +156,7 @@ const DrawerContainer = styled.div<{ open: boolean }>`
   flex-direction: column;
   padding: 0 20px 20px;
   box-sizing: border-box;
-  height: 260px; /* 기존 212 + 내부 영역 확장 */
+  height: 260px;
 `;
 
 const Inner = styled.div`
