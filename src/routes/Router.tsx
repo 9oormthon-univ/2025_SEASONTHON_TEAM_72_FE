@@ -1,12 +1,15 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CreateLinkPage from "../pages/CreateLinkPage";
-import Layout from "../components/Layout/Layout";
+import OCRLoadingPage from "../pages/OCRLoadingPage";
+import Layout from "../components/common/Layout";
+
 const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/createlink" element={<CreateLinkPage />} />
+          <Route path="/ocrloading" element={<OCRLoadingPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
