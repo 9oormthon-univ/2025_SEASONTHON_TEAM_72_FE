@@ -4,8 +4,12 @@ import ReceiptSection from "../components/ReviewReceipt/ReceiptSection";
 import Carousel from "../components/ReviewReceipt/Carousel";
 import SettleupSection from "../components/ReviewReceipt/SettleupSection";
 import { IoShareSocialOutline } from "react-icons/io5";
-
+import { useState } from "react";
+import LinkShareModal from "../components/ReviewReceipt/LinkShareModal";
 const ReviewReceiptPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const shareCode = "ABC123"; // TODO: 실제 공유 코드 값으로 교체
+
   const dummyData2 = [
     {
       user: "전체",
@@ -40,10 +44,13 @@ const ReviewReceiptPage = () => {
     <ReviewReceiptPageLayout>
       <TitleWrapper>
         <TitleP>정산명</TitleP>
-        <IoShareSocialOutline style={{ fontSize: 18 }} />
+        <IoShareSocialOutline
+          style={{ fontSize: 18, cursor: "pointer" }}
+          onClick={() => setIsModalOpen(true)}
+        />
       </TitleWrapper>
       <DashboardDiv>
-        {/* num: api로 전달 받을 예정 */}
+        {/* TODO: api 연결 예정 */}
         <DashboardCard
           borderColor="#F44336"
           textColor="#F44336"
@@ -70,6 +77,11 @@ const ReviewReceiptPage = () => {
         <ReceiptSection data={dummyData2} />
         <SettleupSection />
       </Carousel>
+      <LinkShareModal
+        open={isModalOpen}
+        code={shareCode}
+        onClose={() => setIsModalOpen(false)}
+      />
     </ReviewReceiptPageLayout>
   );
 };

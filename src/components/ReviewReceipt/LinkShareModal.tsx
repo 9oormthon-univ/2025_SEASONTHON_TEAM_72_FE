@@ -55,9 +55,10 @@ const LinkShareModal: React.FC<LinkShareModalProps> = ({
 export default LinkShareModal;
 
 // Animations
+// translate 는 Wrapper 에서만 적용하고, 내부 애니메이션에서는 scale/opacity 만 다뤄 수평 점프 방지
 const popIn = keyframes`
-	from { transform: translate(-50%, -48%) scale(.94); opacity: 0; }
-	to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  from { transform: scale(.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 `;
 
 const Backdrop = styled.div`
@@ -89,6 +90,7 @@ const ModalInner = styled.div`
   padding: 50px 16px 20px; /* 상단 이미지 자리 확보 */
   box-sizing: border-box;
   animation: ${popIn} 0.28s ease;
+  will-change: transform, opacity;
   overflow: visible;
 `;
 
