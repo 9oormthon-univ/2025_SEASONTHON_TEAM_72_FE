@@ -1,11 +1,12 @@
 import styled from "styled-components";
-import hourglassIcon from "../../assets/icons/hourglass-icon.png";
+import hourglassIcon from "../../src/assets/icons/hourglass-icon.svg";
 
 const OCRLoadingPage = () => {
     return (
         <OCRLoadingPageLayout>
+            <LoadingImage src={hourglassIcon} alt="로딩 중" />
             <Title>영수증을 추출하고 있어요...</Title>
-            <LoadingImage src={hourglassIcon} alt="로딩 아이콘" />
+            <LoadingBar />
         </OCRLoadingPageLayout>
     );
 };
@@ -17,8 +18,9 @@ const OCRLoadingPageLayout = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   min-height: 100vh;
-  padding: 280px 20px;
+  overflow: hidden;
 `;
 
 const Title = styled.h1`
@@ -28,16 +30,16 @@ const Title = styled.h1`
   line-height: 130%;
   text-align: center;
   color: #FFFFFF;
-  margin-bottom: 16px;
+  margin-top: 0;
 `;
 
 const LoadingImage = styled.img`
-  width: 24px;
-  height: 24px;
-  margin-top: 30px;
-  position: relative;
-  animation: spin 2s linear infinite; /* 2초 동안 무한 회전 */
-  
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  margin-bottom: 30px;
+  animation: spin 2s linear infinite;
+
   @keyframes spin {
     0% {
       transform: rotate(0deg);
@@ -45,5 +47,35 @@ const LoadingImage = styled.img`
     100% {
       transform: rotate(360deg);
     }
+  }
+`;
+
+const LoadingBar = styled.div`
+width: 173px;
+  height: 7px; 
+  background-color: #FFF; /* stroke 대신 background-color 사용 */
+  border-radius: 3.5px; 
+  flex-shrink: 0;
+  margin-top: 20px; 
+  margin-bottom: 70px;
+  
+  /* 로딩 애니메이션 효과 */
+  position: relative;
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: loading 2s infinite;
+  }
+  
+  @keyframes loading {
+    0% { left: -100%; }
+    100% { left: 100%; }
   }
 `;
