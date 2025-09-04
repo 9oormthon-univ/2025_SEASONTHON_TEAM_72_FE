@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
+import AccountListItem from "../components/Result/AccountListItem";
 import { dummyData2 } from "./ReviewReceiptPage";
 import { useLocation } from "react-router-dom";
 
@@ -20,16 +21,27 @@ const ResultMemberPage = () => {
       <DashboardDiv>
         <MyAmountDiv>{amountText}</MyAmountDiv>
       </DashboardDiv>
-      <ReceiptDiv>
-        {isResultPage && role === "참여자" && (
-          <WarningDiv>
-            ❗입금 시 입금자명은 참여 닉네임으로 해주세요.
-          </WarningDiv>
-        )}{" "}
-        {dummyData2.map((it) => (
-          <ReceiptDropdown key={it.user} data={it} />
-        ))}
-      </ReceiptDiv>
+      <ContentSection>
+        <WarningDiv>❗입금 시 입금자명은 참여 닉네임으로 해주세요.</WarningDiv>
+        <ReceiptDiv>
+          {dummyData2.map((it) => (
+            <ReceiptDropdown key={it.user} data={it} />
+          ))}
+        </ReceiptDiv>
+        <AccountDiv>
+          <p>입금 계좌</p>
+          <AccountListItem
+            bank="우리"
+            accountNumber="3333-18-8210203"
+            owner="이채영"
+          />
+          <AccountListItem
+            bank="우리"
+            accountNumber="3333-18-8210203"
+            owner="이채영"
+          />
+        </AccountDiv>
+      </ContentSection>
     </SettleupResultPageLayout>
   );
 };
@@ -86,7 +98,7 @@ const MyAmountDiv = styled.div`
   font-weight: 800;
 `;
 
-const ReceiptDiv = styled.div`
+const ContentSection = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -107,4 +119,22 @@ const WarningDiv = styled.div`
   color: #f44336;
   font-size: 12px;
   font-weight: 800;
+`;
+
+const ReceiptDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const AccountDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  margin-top: 10px;
+
+  p {
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 5px;
+  }
 `;
