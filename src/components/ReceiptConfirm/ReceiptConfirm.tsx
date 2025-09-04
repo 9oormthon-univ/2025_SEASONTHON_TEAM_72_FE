@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import TopNav from "../common/TopNav";
 import BottomNav from "../common/BottomNav";
-import { SettlementReceipt } from "../common/Receipt";
+import { Receipt } from "../ReceiptConfirm/Receipt";
 
-const ReceiptConfirmContent = () => {
+const ReceiptConfirm = () => {
   const handleBackClick = () => {
     // 뒤로가기 로직 구현
   };
@@ -17,7 +17,7 @@ const ReceiptConfirmContent = () => {
       />
       <ReceiptContainer>
         {/* 연동 예정  */}
-        <SettlementReceipt 
+        <Receipt 
           title="피자 정산"
           date="2024-01-15"
           items={[
@@ -50,7 +50,7 @@ const ReceiptConfirmContent = () => {
   );
 };
 
-export default ReceiptConfirmContent;
+export default ReceiptConfirm;
 
 const ReceiptLayout = styled.div`
   background-color: #eeeeee;
@@ -58,7 +58,6 @@ const ReceiptLayout = styled.div`
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  padding: 0 20px;
   overflow: hidden;
 `;
 

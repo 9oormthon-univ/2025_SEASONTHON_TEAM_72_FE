@@ -20,9 +20,12 @@ const LayoutWrapper = styled.div`
   height: 100vh;
   width: 100vw;
   background-color: #fffafa;
+  overflow: hidden;
 `;
 const Main = styled.div`
   width: 390px;
   height: 100vh;
   background-color: white;
+  overflow: hidden;
+  position: relative;
 `;

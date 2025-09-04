@@ -1,7 +1,7 @@
-import ReceiptConfirmContent from "../components/ReceiptConfirm/ReceiptConfirmContent";
+import ReceiptConfirm from "../components/ReceiptConfirm/ReceiptConfirm";
 
 const ReceiptConfirmPage = () => {
-  return <ReceiptConfirmContent />;
+  return <ReceiptConfirm />;
 };
 
 export default ReceiptConfirmPage;

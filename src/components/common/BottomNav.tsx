@@ -54,7 +54,7 @@ const BarWrapper = styled.div`
   width: 390px;
   background: #ffffff;
   box-shadow: 2px -2px 15px rgba(0, 0, 0, 0.1);
-  padding: 16px 20px 20px 20px;
+  margin: 16px 0;
   display: flex;
   flex-direction: column;
   gap: 12px;

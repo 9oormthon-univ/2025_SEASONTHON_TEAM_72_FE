@@ -14,7 +14,7 @@ interface SettlementReceiptProps {
   items?: SettlementItem[];
 }
 
-export const SettlementReceipt: React.FC<SettlementReceiptProps> = ({
+export const Receipt: React.FC<SettlementReceiptProps> = ({
   title = "새로운 정산",
   date = "YYYY-MM-DD",
   items = [
