@@ -2,6 +2,7 @@ import styled from "styled-components";
 import TopNav from "../common/TopNav";
 import BottomNav from "../common/BottomNav";
 import { Receipt } from "../ReceiptConfirm/Receipt";
+import receiptData from "../../data/receiptData.json";
 
 const ReceiptConfirm = () => {
   const handleBackClick = () => {
@@ -16,31 +17,11 @@ const ReceiptConfirm = () => {
         onBackClick={handleBackClick}
       />
       <ReceiptContainer>
-        {/* 연동 예정  */}
+        {/* 더미데이터 사용 */}
         <Receipt 
-          title="피자 정산"
-          date="2024-01-15"
-          items={[
-            { name: "페퍼로니 피자", quantity: 2, price: 15000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "콜라", quantity: 4, price: 2000 }
-          ]}
+          title={receiptData.title}
+          date={receiptData.date}
+          items={receiptData.items}
         />
       </ReceiptContainer>
       <BottomNav 
