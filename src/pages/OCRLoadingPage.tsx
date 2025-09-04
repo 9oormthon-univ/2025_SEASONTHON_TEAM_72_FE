@@ -1,14 +1,36 @@
-import styled from "styled-components";
-import hourglassIcon from "../../src/assets/icons/hourglass-icon.svg";
+import React from 'react';
+import styled from 'styled-components';
+import hourglassIcon from '../assets/icons/hourglass-icon.svg';
+import OCRLoadingContent from '../components/OCRLoading/OCRLoadingContent';
+import type { OCRResult } from '../apis/ocrApi';
 
-const OCRLoadingPage = () => {
-    return (
-        <OCRLoadingPageLayout>
-            <LoadingImage src={hourglassIcon} alt="로딩 중" />
-            <Title>영수증을 추출하고 있어요...</Title>
-            <LoadingBar />
-        </OCRLoadingPageLayout>
-    );
+const OCRLoadingPage: React.FC = () => {
+  // 데모용: 더미 이미지 파일 생성 (백엔드/라우팅 없이 화면만 보기)
+  const demoFileRef = React.useRef<File | null>(null);
+  if (!demoFileRef.current) {
+    demoFileRef.current = new File(['demo'], 'demo.png', { type: 'image/png' });
+  }
+
+  const handleSuccess = (result: OCRResult) => {
+    console.log('OCR 성공 (데모 모드):', result);
+    // 화면 이동 없음
+  };
+
+  const handleError = (error: string) => {
+    console.error('OCR 실패 (데모 모드):', error);
+    // 화면 이동 없음
+  };
+
+  return (
+    <OCRLoadingPageLayout>
+      <LoadingImage src={hourglassIcon} alt="로딩 중" />
+      <OCRLoadingContent
+        imageFile={demoFileRef.current}
+        onSuccess={handleSuccess}
+        onError={handleError}
+      />
+    </OCRLoadingPageLayout>
+  );
 };
 
 export default OCRLoadingPage;
@@ -23,21 +45,11 @@ const OCRLoadingPageLayout = styled.div`
   overflow: hidden;
 `;
 
-const Title = styled.h1`
-  font-family: NanumSquare_ac;
-  font-weight: 800;
-  font-size: 20px;
-  line-height: 130%;
-  text-align: center;
-  color: #FFFFFF;
-  margin-top: 0;
-`;
-
 const LoadingImage = styled.img`
   width: 39px;
   height: 39px;
   flex-shrink: 0;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
   animation: spin 2s linear infinite;
 
   @keyframes spin {
@@ -47,35 +59,5 @@ const LoadingImage = styled.img`
     100% {
       transform: rotate(360deg);
     }
-  }
-`;
-
-const LoadingBar = styled.div`
-width: 173px;
-  height: 7px; 
-  background-color: #FFF; /* stroke 대신 background-color 사용 */
-  border-radius: 3.5px; 
-  flex-shrink: 0;
-  margin-top: 20px; 
-  margin-bottom: 70px;
-  
-  /* 로딩 애니메이션 효과 */
-  position: relative;
-  overflow: hidden;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    animation: loading 2s infinite;
-  }
-  
-  @keyframes loading {
-    0% { left: -100%; }
-    100% { left: 100%; }
   }
 `;
