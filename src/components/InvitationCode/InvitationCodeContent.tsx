@@ -1,122 +1,79 @@
 import styled from "styled-components";
 import React, { useState, useRef, useEffect } from "react";
+import ErrorIcon from '../../assets/icons/error-icon.svg';
 
 const InvitationCodeContent = () => {
-    const CODE_LENGTH = 6;
-    const [code, setCode] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isChecking, setIsChecking] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const [codes, setCodes] = useState(['', '', '', '', '', '']);
+    const [error, setError] = useState('');
+    const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-    // 코드 검증 함수 (실제 구현시에는 API 호출로 대체)
-    const validateCode = async (inputCode: string): Promise<boolean> => {
-        // 임시 검증 로직 - 실제로는 서버 API 호출
-        // 예시: "ABC123"이 유효한 코드라고 가정
-        const validCodes = ["ABC123", "TEST12", "DEMO01"];
+    //테스트 용 참여코드 - 추후 삭제 
+    const CORRECT_CODE = 'ASDF12';
+
+    const handleInputChange = (index: number, value: string) => {
+        const filteredValue = value.replace(/[^A-Za-z0-9]/g, '');
+        if (filteredValue.length > 1) return;
         
-        // 서버 응답 시뮬레이션을 위한 딜레이
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        return validCodes.includes(inputCode);
-    };
+        const newCodes = [...codes];
+        newCodes[index] = value.toUpperCase(); // 대문자로 통일
+        setCodes(newCodes);
+        setError('');
 
-    // 정산 페이지로 이동하는 함수 (임시)
-    const navigateToSettlement = (code: string) => {
-        console.log('Valid code:', code);
-        // TODO: 실제 라우팅 구현
-    };
-
-    // 코드 검사 실행
-    const checkCode = async (inputCode: string) => {
-        setIsChecking(true);
-        setErrorMessage('');
-
-        try {
-            const isValid = await validateCode(inputCode);
-            
-            if (isValid) {
-                // 유효한 코드인 경우 정산하기 페이지로 이동
-                navigateToSettlement(inputCode);
-            } else {
-                // 유효하지 않은 코드인 경우 에러 메시지 표시
-                setErrorMessage('참여코드를 다시 확인해 주세요.');
-            }
-        } catch (error) {
-            setErrorMessage('참여코드를 다시 확인해 주세요.');
-        } finally {
-            setIsChecking(false);
+        if (value && index < 5) {
+            inputRefs.current[index + 1]?.focus();
         }
     };
 
-    // 6자리가 모두 입력되면 자동으로 코드 검사 실행
-    useEffect(() => {
-        if (code.length === CODE_LENGTH) {
-            checkCode(code);
+    const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+        if (e.key === 'Backspace' && !codes[index] && index > 0) {
+            inputRefs.current[index - 1]?.focus();
+        }
+    };
+
+    //테스트 용 - 추후 수정
+    const handleSubmit = () => {
+        const codeString = codes.join('');
+        if (codeString.length < 6) {
+            setError('참여 코드를 다시 확인해 주세요.');
+        } else if (codeString === CORRECT_CODE) {
+            console.log('성공 코드가 일치합니다.');
         } else {
-            // 입력이 변경되면 에러 메시지 초기화
-            setErrorMessage('');
+            setError('실패 코드가 일치하지 않습니다.');
         }
-    }, [code]);
+    };
 
-    // 사용자가 입력 필드를 클릭하면 숨겨진 실제 input에 포커스를 줍니다.
-    const handleContainerClick = () => {
-        if (inputRef.current) {
-            inputRef.current.focus();
+    useEffect(() => {
+        const codeString = codes.join('');
+        if (codeString.length === 6) {
+            handleSubmit(); // 6자리 모두 입력되면 자동으로 제출
         }
-    };
-    
-    // 입력값이 변경될 때마다 상태를 업데이트합니다.
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.toUpperCase(); // 대문자로 변환
-        if (value.length <= CODE_LENGTH) {
-            setCode(value);
-        }
-    };
+    }, [codes]);
 
     return (
         <InvitationCodePageLayout>
-            <Title>참여 코드를 입력해 주세요.</Title>
-
-            {/* 사용자가 클릭할 수 있는 보이는 입력 필드 컨테이너 */}
-            <CodeInputContainer onClick={handleContainerClick}>
-                {Array.from({ length: CODE_LENGTH }).map((_, index) => {
-                    const char = code[index];
-                    const isFilled = char !== undefined && char !== '';
-                    return (
-                        <CodeInputBox 
-                            key={index} 
-                            $isFilled={isFilled}
-                            $isChecking={isChecking && code.length === CODE_LENGTH}
-                        >
-                            {char || ''}
-                        </CodeInputBox>
-                    );
-                })}
-            </CodeInputContainer>
-            
-            {/* 실제 입력을 받는 숨겨진 input 요소 */}
-            <HiddenInput
-                ref={inputRef}
-                type="text"
-                value={code}
-                onChange={handleInputChange}
-                maxLength={CODE_LENGTH}
-                disabled={isChecking}
-            />
-
-            {/* 로딩 상태 표시 */}
-            {isChecking && (
-                <LoadingMessage>
-                    코드를 확인하는 중...
-                </LoadingMessage>
-            )}
-
-            {/* 에러 메시지 표시 */}
-            {errorMessage && (
-                <ErrorMessage>
-                    {errorMessage}
-                </ErrorMessage>
-            )}
+            <ContentContainer>
+                <Title>참여 코드를 입력해 주세요.</Title>
+                <CodeInputContainer>
+                    {codes.map((code, index) => (
+                        <CodeInput
+                            key={index}
+                            ref={(el) => (inputRefs.current[index] = el)}
+                            value={code}
+                            onChange={(e) => handleInputChange(index, e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(index, e)}
+                            maxLength={1}
+                            type="text"
+                            $filled={!!code}
+                        />
+                    ))}
+                </CodeInputContainer>
+                {error && (
+                    <ErrorMessage>
+                        <ErrorIconImage src={ErrorIcon} alt="오류" />
+                        "참여 코드를 다시 확인해 주세요."
+                    </ErrorMessage>
+                )}
+            </ContentContainer>
         </InvitationCodePageLayout>
     );
 };
@@ -124,65 +81,79 @@ const InvitationCodeContent = () => {
 export default InvitationCodeContent;
 
 const InvitationCodePageLayout = styled.div`
-  background-color: #FFFFFF;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 200px 20px;
-  min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+`;
+
+const ContentContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    padding-top: 210px; 
 `;
 
 const Title = styled.h1`
   font-family: NanumSquare_ac;
-  font-weight: 800;
-  font-size: 20px;
-  line-height: 130%;
+  font-size: 17px;
+font-style: normal;
+font-weight: 800;
+line-height: 130%;
   text-align: center;
   color: #000000;
-  margin-bottom: 16px;
+  margin-bottom: 30px;
 `;
 
 const CodeInputContainer = styled.div`
     display: flex;
-    margin-top: 20px;
-    position: relative;
-    gap: 10px; 
-    cursor: text;
+    gap: 8px;
+    margin-bottom: 20px;
 `;
 
-const CodeInputBox = styled.div<{ $isFilled: boolean; $isChecking: boolean }>`
+const CodeInput = styled.input<{ $filled: boolean }>`
     width: 30px;
     height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    transition: all 0.2s ease-in-out;
+    border-radius: 8px;
+    
+    border: 2px solid ${props => props.$filled ? '#F44336' : '#D9D9D9'};
+    background-color: ${props => props.$filled ? '#F44336' : '#D9D9D9'};
+    color: ${props => props.$filled ? '#FFFFFF' : '#000000'};
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 130%;
+    transition: all 0.2s ease;
 
-    /* isFilled 값에 따라 동적으로 스타일 변경 */
-    background-color: ${props => props.$isFilled ? '#F44336' : '#E0E0E0'};
-    color: ${props => props.$isFilled ? '#FFFFFF' : '#000000'};
-    border: 2px solid ${props => props.$isFilled ? '#D32F2F' : '#BDBDBD'};
+    &:focus {
+        border-color: #F44336;
+        background-color: ${props => props.$filled ? '#F44336' : '#FFFFFF'};
+    }
+
+    &:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 30px ${props => props.$filled ? '#F44336' : '#D9D9D9'} inset;
+        -webkit-text-fill-color: ${props => props.$filled ? '#FFFFFF' : '#000000'};
+    }
 `;
 
-const HiddenInput = styled.input`
-    /* 화면에 보이지 않도록 처리 */
-    position: absolute;
-    width: 0;
-    height: 0;
-    opacity: 0;
-`;
-
-const LoadingMessage = styled.div`
-    margin-top: 20px;
-    color: #666;
-    font-size: 14px;
+const ErrorIconImage = styled.img`
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    margin-right: 8px;
 `;
 
 const ErrorMessage = styled.div`
-    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #F44336;
-    font-size: 14px;
+    text-align: center;
+    font-family: NanumSquare_ac;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 130%;
 `;
