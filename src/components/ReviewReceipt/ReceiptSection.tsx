@@ -1,45 +1,41 @@
 import styled from "styled-components";
 import { MdNotInterested } from "react-icons/md";
 import ReceiptDropdown from "../common/ReceiptDropdown";
+import EmptyDropdown from "../common/EmptyDropdown";
 import {
   dummyData2,
   dummyDataMe,
   dummyDataEntire,
 } from "../../pages/ReviewReceiptPage";
 
-// export interface ReceiptItem {
-//   name: string;
-//   quantity: number;
-//   price: number;
-// }
-
-// export interface ReceiptData {
-//   user: string;
-//   items: ReceiptItem[];
-// }
-
-// export interface ReceiptSectionProps {
-//   data: ReceiptData[];
-// }
-
-const ReceiptSection = () => (
-  <ReceiptDiv>
-    <TitleWrapper>
-      <TitleP>참여자 영수증</TitleP>
-      <WarningWrapper>
-        <MdNotInterested style={{ fontSize: "16px", color: "#F44336" }} />
-        <p style={{ color: "#F44336" }}>확정된 금액 아님</p>
-      </WarningWrapper>
-    </TitleWrapper>
-    <ReceiptWrapper>
-      <ReceiptDropdown data={dummyDataMe} />
-      <ReceiptDropdown data={dummyDataEntire} />
-      {dummyData2.map((it) => (
-        <ReceiptDropdown key={it.user} data={it} />
-      ))}
-    </ReceiptWrapper>
-  </ReceiptDiv>
-);
+const ReceiptSection = () => {
+  // TODO: api로 인원 제한 수 get 예정
+  const LIMIT = 6;
+  const hap = 5;
+  return (
+    <ReceiptDiv>
+      <TitleWrapper>
+        <TitleP>참여자 영수증</TitleP>
+        <WarningWrapper>
+          <MdNotInterested style={{ fontSize: "16px", color: "#F44336" }} />
+          <p style={{ color: "#F44336" }}>확정된 금액 아님</p>
+        </WarningWrapper>
+      </TitleWrapper>
+      <ReceiptWrapper>
+        {/* TODO: api 연결 예정 */}
+        <ReceiptDropdown data={dummyDataMe} />
+        <ReceiptDropdown data={dummyDataEntire} />
+        {dummyData2.map((it) => (
+          <ReceiptDropdown key={it.user} data={it} />
+        ))}
+        {LIMIT - hap > 0 &&
+          Array.from({ length: LIMIT - hap }).map((_, i) => (
+            <EmptyDropdown key={`empty-${i}`} />
+          ))}
+      </ReceiptWrapper>
+    </ReceiptDiv>
+  );
+};
 
 export default ReceiptSection;
 
