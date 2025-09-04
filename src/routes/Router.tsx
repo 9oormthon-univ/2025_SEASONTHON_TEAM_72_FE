@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CreateLinkPage from "../pages/CreateLinkPage";
 import ReviewReceiptPage from "../pages/ReviewReceiptPage";
-import FinishSettleupPage from "../pages/FinishSettleupPage";
-import SettleupResultPage from "../pages/SettleupResultPage";
+import ResultMemberPage from "../pages/ResultMemberPage";
+import ResultManagerPage from "../pages/ResultManagerPage";
 import Layout from "../components/Layout/Layout";
 
 const Router = () => {
@@ -11,10 +11,9 @@ const Router = () => {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/createlink" element={<CreateLinkPage />} />
-          <Route path="/finishsettleup" element={<FinishSettleupPage />} />
-          <Route path="/result" element={<SettleupResultPage />} />
           <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />
-          <Route path="/finishsettleup" element={<FinishSettleupPage />} />
+          <Route path="/result/manager" element={<ResultManagerPage />} />
+          <Route path="/result/member" element={<ResultMemberPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

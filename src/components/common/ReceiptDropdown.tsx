@@ -15,23 +15,22 @@ interface ReceiptData {
 
 interface ReceiptDropdownProps {
   data: ReceiptData;
-  role?: "총괄자" | "참여자"; // 현재 사용자 역할
-  myName?: string; 
-  initialPaid?: boolean; 
+  myName?: string;
+  initialPaid?: boolean;
   onStatusChange?: (paid: boolean) => void;
 }
 
 const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
   data,
-  role = "총괄자",
   myName = "내이름",
   initialPaid = false,
   onStatusChange,
 }) => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const isResultPage = location.pathname === "/result";
-  
+  const isManagerPage = location.pathname === "/result/manager";
+  const isMemberPage = location.pathname === "/result/member";
+
   // 소유자 판별: data.user 가 myName 과 동일하면 '내 영수증'
   const mine = data.user === myName;
   const [isPaid, setIsPaid] = useState<boolean>(initialPaid);
@@ -50,22 +49,26 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
     });
   };
 
-  const showEnhancedUI = isResultPage;
-  const showManagerControls = showEnhancedUI && role === "총괄자" && !mine; // 참여자 영수증
-  const showParticipantSelfButton = showEnhancedUI && role === "참여자" && mine;
+  // ----- UI 결정 로직 (초기 기획 반영 가정) -----
+  // Manager 페이지: 다른 사람 영수증에만 상태 점 표시 + 미입금(red)일 때만 "독촉하기" 버튼 (토글 아님)
+  // Member 페이지: 내 영수증에만 버튼 노출, 클릭 시 입금 완료/취소 토글 (상태 점은 Manager 화면에서만 활용)
+  const showStatusDot = isManagerPage && !mine; // 총괄자 입장에서만 상태 점
   const statusDotColor = isPaid ? "#07A320" : "#f44336";
-  let actionBtn: { label: string; color: string; onClick: () => void } | null =
-    null;
 
-  if (showManagerControls) {
-    // 총괄자: 항상 빨간 버튼, 라벨 토글
+  type ActionBtn = { label: string; color: string; onClick: () => void } | null;
+  let actionBtn: ActionBtn = null;
+
+  if (isManagerPage && !mine && !isPaid) {
+    // 독촉만 가능 (상태 변경 X)
     actionBtn = {
-      label: isPaid ? "입금 취소하기" : "독촉하기",
+      label: "독촉하기",
       color: "#f44336",
-      onClick: () => togglePaid(),
+      onClick: () => {
+        // TODO: 독촉 API 호출 자리
+        console.log(`remind payment -> ${data.user}`);
+      },
     };
-  } else if (showParticipantSelfButton) {
-    // 참여자 자신의 영수증: 라벨 & 색상 토글
+  } else if (isMemberPage && mine) {
     actionBtn = {
       label: isPaid ? "입금 취소하기" : "입금 완료하기",
       color: isPaid ? "#f44336" : "#07A320",
@@ -76,9 +79,7 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
   return (
     <ReceiptDropdownLayout>
       <DropdownCard onClick={() => setOpen((prev) => !prev)} isOpen={open}>
-        {showManagerControls && (
-          <StatusDot aria-hidden $color={statusDotColor} />
-        )}
+        {showStatusDot && <StatusDot aria-hidden $color={statusDotColor} />}
         <span>{mine ? "내 영수증" : data.user}</span>
       </DropdownCard>
       {open && (

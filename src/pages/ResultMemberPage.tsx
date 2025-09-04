@@ -3,7 +3,7 @@ import ReceiptDropdown from "../components/common/ReceiptDropdown";
 import { dummyData2 } from "./ReviewReceiptPage";
 import { useLocation } from "react-router-dom";
 
-const SettleupResultPage = () => {
+const ResultMemberPage = () => {
   const location = useLocation();
   const isResultPage = location.pathname === "/result";
   const price = 10000;
@@ -34,7 +34,7 @@ const SettleupResultPage = () => {
   );
 };
 
-export default SettleupResultPage;
+export default ResultMemberPage;
 
 const SettleupResultPageLayout = styled.div`
   display: flex;
