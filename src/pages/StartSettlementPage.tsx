@@ -1,4 +1,4 @@
-import StartSettlement from "../components/StartSettlement/StartSettlementContent";
+import StartSettlement from "../components/StartSettlement/StartSettlement";
 
 const StartSettlementPage = () => {
   return <StartSettlement />;

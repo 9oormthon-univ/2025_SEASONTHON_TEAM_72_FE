@@ -2,7 +2,7 @@ import styled from "styled-components";
 import React, { useRef } from "react";
 import StartSettlementImage from "../../assets/images/start_settlement_img.svg";
 
-const StartSettlementContent = () => {
+const StartSettlement = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleLoadReceiptClick = () => {
@@ -63,7 +63,7 @@ const StartSettlementContent = () => {
   );
 };
 
-export default StartSettlementContent;
+export default StartSettlement;
 
 const StartSettlementLayout = styled.div`
   background-color: #FFFFFF;
