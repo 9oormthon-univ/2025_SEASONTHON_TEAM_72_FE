@@ -64,7 +64,7 @@ const Wrapper = styled.div`
   width: 100%;
   background: #fff;
   border: 0.5px solid #d9d9d9;
-  border-radius: 8px;
+  border-radius: 5px;
   padding: 10px 16px 10px 16px;
   display: flex;
   align-items: center;
