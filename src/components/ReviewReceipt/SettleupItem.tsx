@@ -15,16 +15,11 @@ const SettleupItem: React.FC<SettleupItemProps> = ({
   selections,
   onUpdateMyAmount,
 }) => {
-  const MYNAME = "내이름";
+  const MYNAME = "이채영";
   const [open, setOpen] = useState(false);
   const myAmount = selections
     .filter((s) => s.user === MYNAME)
     .reduce<number>((a, c) => a + c.amount, 0);
-  const formatAmount = (v: number) => {
-    if (Number.isInteger(v)) return v.toString();
-    return v.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
-  };
-  const displayAmount = formatAmount(myAmount);
   return (
     <>
       <ItemWrapper onClick={() => setOpen(true)}>
@@ -35,7 +30,7 @@ const SettleupItem: React.FC<SettleupItemProps> = ({
             <span>{price.toLocaleString()}원</span>
           </SubLine>
         </LeftTexts>
-        <Circle $status={status}>{displayAmount}개</Circle>
+        <Circle $status={status}>{myAmount}개</Circle>
       </ItemWrapper>
       <SettleupDrawer
         open={open}

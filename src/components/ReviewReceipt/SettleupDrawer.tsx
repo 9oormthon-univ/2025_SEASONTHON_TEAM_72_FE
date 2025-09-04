@@ -16,7 +16,7 @@ export interface SettleupDrawerProps {
   price: number;
   selections: UserSelection[];
   onClose: () => void;
-  onSave?: (newAmount: number) => void; // 현재 사용자 선택 값 저장 콜백
+  onSave?: (newAmount: number) => void;
 }
 
 const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
@@ -28,12 +28,16 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   onClose,
   onSave,
 }) => {
-  const MYNAME = "내이름";
+  // TODO: 내 정보 전역 관리
+  const MYNAME = "이채영";
   const [portalEl, setPortalEl] = React.useState<HTMLElement | null>(null);
   const mySelection = selections.find((s) => s.user === MYNAME);
   const [tempValue, setTempValue] = useState<number>(
     () => mySelection?.amount ?? 0
   );
+  const myAmount = selections
+    .filter((s) => s.user === MYNAME)
+    .reduce<number>((a, c) => a + c.amount, 0);
 
   const handleTempChange = (v: number) => {
     setTempValue(v);
@@ -44,6 +48,10 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
     onClose();
   };
 
+  const commitCancel = () => {
+    setTempValue(myAmount);
+    onClose();
+  };
   useEffect(() => {
     if (open) {
       const latest = selections.find((s) => s.user === MYNAME)?.amount ?? 0;
@@ -94,7 +102,7 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
               <SaveButton type="button" onClick={commitSave}>
                 저장
               </SaveButton>
-              <HeaderButton type="button" onClick={onClose} />
+              <HeaderButton type="button" onClick={commitCancel} />
             </HeaderActions>
           </HeaderRow>
           <PriceP>{price.toLocaleString()}원</PriceP>
@@ -115,7 +123,7 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
           </List>
           <AdjusterWrapper>
             <SelectionAdjuster
-              initialValue={tempValue}
+              assignedValue={myAmount}
               max={quantity}
               onChange={handleTempChange}
             />

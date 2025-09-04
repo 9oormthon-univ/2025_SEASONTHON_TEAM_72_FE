@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
 import AccountListItem from "../components/Result/AccountListItem";
-import { dummyData2 } from "./ReviewReceiptPage";
+import { dummyData2, dummyDataEntire, dummyDataMe } from "./ReviewReceiptPage";
 import { SettleupResultPageLayout, TitleWrapper } from "./ResultManagerPage";
 
 const ResultMemberPage = () => {
@@ -13,6 +13,8 @@ const ResultMemberPage = () => {
       <ContentSection>
         <WarningDiv>❗입금 시 입금자명은 참여 닉네임으로 해주세요.</WarningDiv>
         <ReceiptDiv>
+          <ReceiptDropdown data={dummyDataMe} />
+          <ReceiptDropdown data={dummyDataEntire} />
           {dummyData2.map((it) => (
             <ReceiptDropdown key={it.user} data={it} />
           ))}

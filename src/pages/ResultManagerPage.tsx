@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
-import { dummyData2 } from "./ReviewReceiptPage";
+import { dummyData2, dummyDataEntire, dummyDataMe } from "./ReviewReceiptPage";
 
 const ResultManagerPage = () => {
   return (
@@ -9,6 +9,8 @@ const ResultManagerPage = () => {
         <TitleP>하나로마트 정산</TitleP>
       </TitleWrapper>
       <ReceiptDiv>
+        <ReceiptDropdown data={dummyDataMe} />
+        <ReceiptDropdown data={dummyDataEntire} />
         {dummyData2.map((it) => (
           <ReceiptDropdown key={it.user} data={it} />
         ))}
