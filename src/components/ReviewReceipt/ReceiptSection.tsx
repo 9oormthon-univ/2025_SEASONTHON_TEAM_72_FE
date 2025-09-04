@@ -2,18 +2,18 @@ import styled from "styled-components";
 import { MdNotInterested } from "react-icons/md";
 import ReceiptDropdown from "../common/ReceiptDropdown";
 
-interface ReceiptItem {
+export interface ReceiptItem {
   name: string;
   quantity: number;
   price: number;
 }
 
-interface ReceiptData {
+export interface ReceiptData {
   user: string;
   items: ReceiptItem[];
 }
 
-interface ReceiptSectionProps {
+export interface ReceiptSectionProps {
   data: ReceiptData[];
 }
 

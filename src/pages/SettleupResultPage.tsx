@@ -1,16 +1,34 @@
 import styled from "styled-components";
+import ReceiptDropdown from "../components/common/ReceiptDropdown";
+import { dummyData2 } from "./ReviewReceiptPage";
+import { useLocation } from "react-router-dom";
 
 const SettleupResultPage = () => {
+  const location = useLocation();
+  const isResultPage = location.pathname === "/result";
   const price = 10000;
+  const role = "참여자"; // TODO: api로 데이터 핸들링
+  const amountText =
+    role === "참여자"
+      ? `${price.toLocaleString()}원 입금하기`
+      : `${price.toLocaleString()}원`;
   return (
     <SettleupResultPageLayout>
       <TitleWrapper>
         <TitleP>하나로마트 정산</TitleP>
       </TitleWrapper>
       <DashboardDiv>
-        <MyAmountDiv>{price.toLocaleString()}원</MyAmountDiv>
+        <MyAmountDiv>{amountText}</MyAmountDiv>
       </DashboardDiv>
       <ReceiptDiv>
+        {isResultPage && role === "참여자" && (
+          <WarningDiv>
+            ❗입금 시 입금자명은 참여 닉네임으로 해주세요.
+          </WarningDiv>
+        )}{" "}
+        {dummyData2.map((it) => (
+          <ReceiptDropdown key={it.user} data={it} />
+        ))}
       </ReceiptDiv>
     </SettleupResultPageLayout>
   );
@@ -78,5 +96,15 @@ const ReceiptDiv = styled.div`
   height: 100vh;
   width: 100%;
   margin: 24px 20px 0 20px;
-  padding: 0;
+  padding-top: 20px;
+`;
+
+const WarningDiv = styled.div`
+  width: 350px;
+  padding: 4px 0 4px 3px;
+  margin-bottom: 5px;
+  background-color: #ffffd0;
+  color: #f44336;
+  font-size: 12px;
+  font-weight: 800;
 `;

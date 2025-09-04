@@ -6,40 +6,42 @@ import SettleupSection from "../components/ReviewReceipt/SettleupSection";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { useState } from "react";
 import LinkShareModal from "../components/ReviewReceipt/LinkShareModal";
+
+export const dummyData2 = [
+  {
+    user: "전체",
+    items: [
+      { name: "콜라", quantity: 2, price: 1500 },
+      { name: "치킨", quantity: 1, price: 18000 },
+    ],
+  },
+  {
+    user: "내이름",
+    items: [
+      { name: "콜라", quantity: 2, price: 1500 },
+      { name: "치킨", quantity: 1, price: 18000 },
+    ],
+  },
+  {
+    user: "홍길동",
+    items: [
+      { name: "콜라", quantity: 2, price: 1500 },
+      { name: "치킨", quantity: 1, price: 18000 },
+    ],
+  },
+  {
+    user: "최마루",
+    items: [
+      { name: "콜라", quantity: 2, price: 1500 },
+      { name: "치킨", quantity: 1, price: 18000 },
+    ],
+  },
+];
+
 const ReviewReceiptPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const shareCode = "ABC123"; // TODO: 실제 공유 코드 값으로 교체
 
-  const dummyData2 = [
-    {
-      user: "전체",
-      items: [
-        { name: "콜라", quantity: 2, price: 1500 },
-        { name: "치킨", quantity: 1, price: 18000 },
-      ],
-    },
-    {
-      user: "내 영수증",
-      items: [
-        { name: "콜라", quantity: 2, price: 1500 },
-        { name: "치킨", quantity: 1, price: 18000 },
-      ],
-    },
-    {
-      user: "홍길동",
-      items: [
-        { name: "콜라", quantity: 2, price: 1500 },
-        { name: "치킨", quantity: 1, price: 18000 },
-      ],
-    },
-    {
-      user: "최마루",
-      items: [
-        { name: "콜라", quantity: 2, price: 1500 },
-        { name: "치킨", quantity: 1, price: 18000 },
-      ],
-    },
-  ];
   return (
     <ReviewReceiptPageLayout>
       <TitleWrapper>
