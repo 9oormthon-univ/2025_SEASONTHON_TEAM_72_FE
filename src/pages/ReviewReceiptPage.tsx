@@ -8,16 +8,25 @@ import { IoShareSocialOutline } from "react-icons/io5";
 import { useState } from "react";
 import LinkShareModal from "../components/ReviewReceipt/LinkShareModal";
 
+export const dummyDataMe = {
+  user: "이채영",
+  items: [
+    { name: "콜라", quantity: 2, price: 1500 },
+    { name: "치킨", quantity: 1, price: 18000 },
+  ],
+};
+
+export const dummyDataEntire = {
+  user: "전체",
+  items: [
+    { name: "콜라", quantity: 8, price: 6000 },
+    { name: "치킨", quantity: 5, price: 72000 },
+  ],
+};
+
 export const dummyData2 = [
   {
-    user: "전체",
-    items: [
-      { name: "콜라", quantity: 2, price: 1500 },
-      { name: "치킨", quantity: 1, price: 18000 },
-    ],
-  },
-  {
-    user: "내이름",
+    user: "김짱돌",
     items: [
       { name: "콜라", quantity: 2, price: 1500 },
       { name: "치킨", quantity: 1, price: 18000 },
@@ -57,7 +66,7 @@ const ReviewReceiptPage = () => {
         <ProgressbarCard complete={5} incomplete={3} />
       </DashboardDiv>
       <Carousel>
-        <ReceiptSection data={dummyData2} />
+        <ReceiptSection />
         <SettleupSection />
       </Carousel>
       <LinkShareModal

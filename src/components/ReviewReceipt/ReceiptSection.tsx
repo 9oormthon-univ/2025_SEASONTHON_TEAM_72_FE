@@ -1,33 +1,40 @@
 import styled from "styled-components";
 import { MdNotInterested } from "react-icons/md";
 import ReceiptDropdown from "../common/ReceiptDropdown";
+import {
+  dummyData2,
+  dummyDataMe,
+  dummyDataEntire,
+} from "../../pages/ReviewReceiptPage";
 
-export interface ReceiptItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
+// export interface ReceiptItem {
+//   name: string;
+//   quantity: number;
+//   price: number;
+// }
 
-export interface ReceiptData {
-  user: string;
-  items: ReceiptItem[];
-}
+// export interface ReceiptData {
+//   user: string;
+//   items: ReceiptItem[];
+// }
 
-export interface ReceiptSectionProps {
-  data: ReceiptData[];
-}
+// export interface ReceiptSectionProps {
+//   data: ReceiptData[];
+// }
 
-const ReceiptSection: React.FC<ReceiptSectionProps> = ({ data }) => (
+const ReceiptSection = () => (
   <ReceiptDiv>
     <TitleWrapper>
       <TitleP>참여자 영수증</TitleP>
       <WarningWrapper>
-        <MdNotInterested style={{ fontSize: "16px", color: "#F44336"}} />
+        <MdNotInterested style={{ fontSize: "16px", color: "#F44336" }} />
         <p style={{ color: "#F44336" }}>확정된 금액 아님</p>
       </WarningWrapper>
     </TitleWrapper>
     <ReceiptWrapper>
-      {data.map((it) => (
+      <ReceiptDropdown data={dummyDataMe} />
+      <ReceiptDropdown data={dummyDataEntire} />
+      {dummyData2.map((it) => (
         <ReceiptDropdown key={it.user} data={it} />
       ))}
     </ReceiptWrapper>

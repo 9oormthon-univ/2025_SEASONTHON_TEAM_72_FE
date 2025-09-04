@@ -23,19 +23,17 @@ interface ReceiptDropdownProps {
 
 const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
   data,
-  myName = "내이름",
   initialPaid = false,
   onStatusChange,
 }) => {
+  // TODO: 내 정보 전역 상태로 추가
+  const myName = "이채영";
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isManagerPage = location.pathname === "/result/manager";
   const isMemberPage = location.pathname === "/result/member";
 
-  // 소유자 판별: data.user 가 myName 과 동일하면 '내 영수증'
   const mine = data.user === myName;
-
-  // '전체 영수증' 판단 (레이블 안에 '전체' 문구 포함 시 처리)
   const isTotal = /전체/.test(data.user);
   const [isPaid, setIsPaid] = useState<boolean>(initialPaid);
 
@@ -110,7 +108,12 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
           <span>{mine ? "내 영수증" : data.user}</span>
           {showStatusDot && <StatusDot aria-hidden $color={statusDotColor} />}
         </CardLeft>
-        <ArrowImg aria-hidden $open={open} src={arrowIcon} alt="" />
+        <CardRight>
+          {!open && (
+            <TotalPriceText>{totalPrice.toLocaleString()}원</TotalPriceText>
+          )}
+          <ArrowImg aria-hidden $open={open} src={arrowIcon} alt="" />
+        </CardRight>
       </DropdownCard>
       {open && (
         <DropdownContent role="region" aria-label={`${data.user} 영수증 상세`}>
@@ -194,6 +197,18 @@ const CardLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+`;
+
+const CardRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const TotalPriceText = styled.span`
+  font-size: 12px;
+  font-weight: 800;
+  color: #000;
 `;
 
 const ArrowImg = styled.img<{ $open: boolean }>`
