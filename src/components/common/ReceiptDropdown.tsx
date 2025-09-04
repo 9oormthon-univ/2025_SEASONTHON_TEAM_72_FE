@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useLocation } from "react-router-dom";
+import arrowIcon from "../../assets/icons/keyboard_arrow_down.svg";
 
 interface ReceiptItem {
   name: string;
@@ -33,6 +34,9 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
 
   // 소유자 판별: data.user 가 myName 과 동일하면 '내 영수증'
   const mine = data.user === myName;
+
+  // '전체 영수증' 판단 (레이블 안에 '전체' 문구 포함 시 처리)
+  const isTotal = /전체/.test(data.user);
   const [isPaid, setIsPaid] = useState<boolean>(initialPaid);
 
   const totalQuantity = data.items.reduce(
@@ -40,7 +44,6 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
     0
   );
   const totalPrice = data.items.reduce((sum, item) => sum + item.price, 0);
-  // 버튼 클릭 동작 정의
   const togglePaid = () => {
     setIsPaid((prev) => {
       const next = !prev;
@@ -49,38 +52,65 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
     });
   };
 
-  // ----- UI 결정 로직 (초기 기획 반영 가정) -----
-  // Manager 페이지: 다른 사람 영수증에만 상태 점 표시 + 미입금(red)일 때만 "독촉하기" 버튼 (토글 아님)
-  // Member 페이지: 내 영수증에만 버튼 노출, 클릭 시 입금 완료/취소 토글 (상태 점은 Manager 화면에서만 활용)
-  const showStatusDot = isManagerPage && !mine; // 총괄자 입장에서만 상태 점
+  const showStatusDot = isManagerPage && !mine && !isTotal;
   const statusDotColor = isPaid ? "#07A320" : "#f44336";
 
-  type ActionBtn = { label: string; color: string; onClick: () => void } | null;
-  let actionBtn: ActionBtn = null;
+  type ActionBtn = { label: string; color: string; onClick: () => void };
+  let actionButtons: ActionBtn[] = [];
 
-  if (isManagerPage && !mine && !isPaid) {
-    // 독촉만 가능 (상태 변경 X)
-    actionBtn = {
-      label: "독촉하기",
-      color: "#f44336",
-      onClick: () => {
-        // TODO: 독촉 API 호출 자리
-        console.log(`remind payment -> ${data.user}`);
+  // Manager: 다른 사람 & 전체 아님
+  if (!isTotal && isManagerPage && !mine) {
+    if (!isPaid) {
+      actionButtons = [
+        {
+          label: "독촉하기",
+          color: "#f44336",
+          onClick: () => {
+            // TODO: 독촉 API 연동
+            console.log(`remind payment -> ${data.user}`);
+          },
+        },
+        {
+          label: "입금 완료하기",
+          color: "#00D337",
+          onClick: () => {
+            setIsPaid(true);
+            onStatusChange?.(true);
+          },
+        },
+      ];
+    } else {
+      // 정산 완료 -> 취소 버튼 하나
+      actionButtons = [
+        {
+          label: "입금 취소하기",
+          color: "#f44336",
+          onClick: () => {
+            setIsPaid(false);
+            onStatusChange?.(false);
+          },
+        },
+      ];
+    }
+  } else if (!isTotal && isMemberPage && mine) {
+    // Member 내 영수증: 토글 하나
+    actionButtons = [
+      {
+        label: isPaid ? "입금 취소하기" : "입금 완료하기",
+        color: isPaid ? "#f44336" : "#00D337",
+        onClick: () => togglePaid(),
       },
-    };
-  } else if (isMemberPage && mine) {
-    actionBtn = {
-      label: isPaid ? "입금 취소하기" : "입금 완료하기",
-      color: isPaid ? "#f44336" : "#07A320",
-      onClick: () => togglePaid(),
-    };
+    ];
   }
 
   return (
     <ReceiptDropdownLayout>
       <DropdownCard onClick={() => setOpen((prev) => !prev)} isOpen={open}>
-        {showStatusDot && <StatusDot aria-hidden $color={statusDotColor} />}
-        <span>{mine ? "내 영수증" : data.user}</span>
+        <CardLeft>
+          <span>{mine ? "내 영수증" : data.user}</span>
+          {showStatusDot && <StatusDot aria-hidden $color={statusDotColor} />}
+        </CardLeft>
+        <ArrowImg aria-hidden $open={open} src={arrowIcon} alt="" />
       </DropdownCard>
       {open && (
         <DropdownContent role="region" aria-label={`${data.user} 영수증 상세`}>
@@ -111,14 +141,28 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
               </tr>
             </tfoot>
           </table>
-          {actionBtn && (
+          {actionButtons.length === 1 && (
             <ActionButton
               type="button"
-              style={{ background: actionBtn.color }}
-              onClick={actionBtn.onClick}
+              style={{ background: actionButtons[0].color }}
+              onClick={actionButtons[0].onClick}
             >
-              {actionBtn.label}
+              {actionButtons[0].label}
             </ActionButton>
+          )}
+          {actionButtons.length === 2 && (
+            <ButtonsRow>
+              {actionButtons.map((b) => (
+                <RowButton
+                  key={b.label}
+                  type="button"
+                  style={{ background: b.color }}
+                  onClick={b.onClick}
+                >
+                  {b.label}
+                </RowButton>
+              ))}
+            </ButtonsRow>
           )}
         </DropdownContent>
       )}
@@ -139,11 +183,25 @@ const DropdownCard = styled.div<{ isOpen: boolean }>`
   border: ${({ isOpen }) => (isOpen ? "" : "0.5px solid #d9d9d9")};
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 16px;
+  justify-content: space-between;
+  padding: 0 12px 0 16px;
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
+`;
+
+const CardLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const ArrowImg = styled.img<{ $open: boolean }>`
+  width: 18px;
+  height: 18px;
+  transform: rotate(${({ $open }) => ($open ? "180deg" : "0deg")});
+  transition: transform 0.22s ease;
+  opacity: 0.75;
 `;
 
 const slideDown = keyframes`
@@ -223,11 +281,31 @@ const StatusDot = styled.span<{ $color: string }>`
 `;
 
 const ActionButton = styled.button`
-  width: calc(100% - 40px); /* 좌우 20px 마진 */
-  margin: 12px 20px 0 20px;
+  width: 100%;
+  margin-top: 16px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ButtonsRow = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  margin-top: 16px;
+`;
+
+const RowButton = styled.button`
+  flex: 1 1 0;
   height: 40px;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   font-size: 14px;
   font-weight: 700;
   color: #fff;
