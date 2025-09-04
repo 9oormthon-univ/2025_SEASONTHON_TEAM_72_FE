@@ -1,11 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-
-interface TopNavProps {
-  title: string;
-  showBackButton?: boolean;
-  onBackClick?: () => void;
-}
+import type { TopNavProps } from "../../types/common";
 
 const TopNav: React.FC<TopNavProps> = ({ 
   title, 
@@ -48,7 +43,7 @@ const BackButton = styled.div`
   justify-content: center;
   cursor: pointer;
   padding: 8px;
-  min-width: 40px;
+  min-width: 40px; /* 최소 너비 보장 */
   
   &:hover {
     opacity: 0.7;
@@ -63,11 +58,11 @@ const Title = styled.h1`
   position: absolute; 
   left: 50%; 
   transform: translateX(-50%);
-
+  
   color: #000;
   text-align: center;
   font-family: "NanumSquare", sans-serif;
-  font-size: 20px;
+  font-size: clamp(14px, 4vw, 20px); /* 동적 폰트 크기 */
   font-style: normal;
   font-weight: 800;
   line-height: 130%;
