@@ -30,12 +30,12 @@ const BottomNav: React.FC<BottomNavProps> = ({
       <Spacer style={{ height: spacerHeight }} />
       <BarWrapper ref={barRef}>
         {description && <DescriptionText>{description}</DescriptionText>}
-        <Buttons>
+        <ButtonsContainer>
           <PrimaryButton onClick={onPrimaryClick}>{primaryLabel}</PrimaryButton>
           {secondaryLabel && (
             <SecondaryButton onClick={onSecondaryClick}>{secondaryLabel}</SecondaryButton>
           )}
-        </Buttons>
+        </ButtonsContainer>
       </BarWrapper>
     </>
   );
@@ -47,44 +47,48 @@ const Spacer = styled.div``;
 
 const BarWrapper = styled.div`
   position: fixed;
-  align-items: center;
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
   width: 390px;
   background: #ffffff;
   box-shadow: 2px -2px 15px rgba(0, 0, 0, 0.1);
-  margin: 16px 0;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   z-index: 10;
+  border-radius: 16px 16px 0 0;
 `;
 
 const DescriptionText = styled.span`
   color: #6b6b6b;
   font-size: 10px;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-weight: 700;
   line-height: 13px;
+  text-align: center;
   word-wrap: break-word;
+  margin-bottom: 4px;
 `;
 
-const Buttons = styled.div`
+const ButtonsContainer  = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
+  width: 100%;
 `;
 
 const PrimaryButton = styled.button`
-  width: 350px;
+width: 350px;
   height: 40px;
   background-color: #f44336;
   color: #fff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-weight: 800;
   font-size: 16px;
   line-height: 130%;
@@ -96,21 +100,22 @@ const PrimaryButton = styled.button`
 `;
 
 const SecondaryButton = styled.button`
-  width: 350px;
+width: 350px;
   height: 40px;
   background-color: #ffffff;
   color: #f44336;
   border: 1px #f44336 solid;
   border-radius: 10px;
   cursor: pointer;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-weight: 800;
   font-size: 16px;
   line-height: 130%;
   transition: opacity 0.2s;
 
   &:hover {
-    opacity: 0.8;
+    background-color: #e0e0e0bc;
+    border-color: #cccccc;
   }
 `;
 

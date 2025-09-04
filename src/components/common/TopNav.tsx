@@ -21,10 +21,10 @@ const TopNav: React.FC<TopNavProps> = ({
           </svg>
         </BackButton>
       ) : (
-        <div />
+        <Spacer />
       )}
       <Title>{title}</Title>
-      <div /> {/* 오른쪽 공간을 위한 빈 div */}
+      <Spacer /> {/* 오른쪽 공간을 위한 빈 공간 */}
     </TopNavContainer>
   );
 };
@@ -38,7 +38,7 @@ const TopNavContainer = styled.div`
   width: 100%;
   flex-shrink: 0;
   margin-top: 45px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   position: relative;
 `;
 
@@ -48,10 +48,15 @@ const BackButton = styled.div`
   justify-content: center;
   cursor: pointer;
   padding: 8px;
+  min-width: 40px;
   
   &:hover {
     opacity: 0.7;
   }
+`;
+
+const Spacer = styled.div`
+  min-width: 40px; /* BackButton과 동일한 최소 너비 */
 `;
 
 const Title = styled.h1`
@@ -61,10 +66,14 @@ const Title = styled.h1`
 
   color: #000;
   text-align: center;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-size: 20px;
   font-style: normal;
   font-weight: 800;
   line-height: 130%;
   margin: 0;
+  white-space: nowrap;
+  max-width: calc(100% - 160px); /* 좌우 버튼 영역 확보 (80px씩) */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 너무 길면 ... 표시 */
 `;

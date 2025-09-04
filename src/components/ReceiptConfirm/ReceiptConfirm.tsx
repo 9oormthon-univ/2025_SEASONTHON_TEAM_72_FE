@@ -37,6 +37,8 @@ const ReceiptConfirm = () => {
             { name: "콜라", quantity: 4, price: 2000 },
             { name: "콜라", quantity: 4, price: 2000 },
             { name: "콜라", quantity: 4, price: 2000 },
+            { name: "콜라", quantity: 4, price: 2000 },
+            { name: "콜라", quantity: 4, price: 2000 },
             { name: "콜라", quantity: 4, price: 2000 }
           ]}
         />
@@ -66,11 +68,11 @@ const ReceiptContainer = styled.div`
   justify-content: center;
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 10px;
+  padding-bottom: 30px;
   width: 100%;
 
    &::-webkit-scrollbar {
-    width: 6px;
+    width: 0.1px;
   }
   
   &::-webkit-scrollbar-track {
