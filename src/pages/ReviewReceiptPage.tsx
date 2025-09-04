@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import DashboardCard from "../components/common/DashboardCard";
+// import DashboardCard from "../components/common/DashboardCard";
+import ProgressbarCard from "../components/common/ProgressbarCard";
 import ReceiptSection from "../components/ReviewReceipt/ReceiptSection";
 import Carousel from "../components/ReviewReceipt/Carousel";
 import SettleupSection from "../components/ReviewReceipt/SettleupSection";
@@ -53,27 +54,7 @@ const ReviewReceiptPage = () => {
       </TitleWrapper>
       <DashboardDiv>
         {/* TODO: api 연결 예정 */}
-        <DashboardCard
-          borderColor="#F44336"
-          textColor="#F44336"
-          backColor="#fff"
-          num={2}
-          text="완료"
-        />
-        <DashboardCard
-          borderColor="rgba(0,0,0,0)"
-          textColor="#F44336"
-          backColor="#fdd9d7"
-          num={2}
-          text="미완료"
-        />
-        <DashboardCard
-          borderColor="#F44336"
-          textColor="#fff"
-          backColor="#F44336"
-          num={1}
-          text="초과"
-        />
+        <ProgressbarCard complete={5} incomplete={3} />
       </DashboardDiv>
       <Carousel>
         <ReceiptSection data={dummyData2} />

@@ -20,9 +20,9 @@ export interface ReceiptSectionProps {
 const ReceiptSection: React.FC<ReceiptSectionProps> = ({ data }) => (
   <ReceiptDiv>
     <TitleWrapper>
-      <p style={{ fontSize: "14px", fontWeight: 800 }}>참여자 영수증</p>
+      <TitleP>참여자 영수증</TitleP>
       <WarningWrapper>
-        <MdNotInterested style={{ fontSize: "16px", color: "#F44336" }} />
+        <MdNotInterested style={{ fontSize: "16px", color: "#F44336"}} />
         <p style={{ color: "#F44336" }}>확정된 금액 아님</p>
       </WarningWrapper>
     </TitleWrapper>
@@ -44,7 +44,6 @@ const ReceiptDiv = styled.div`
   background-color: #eeeeee;
   width: auto;
   height: 100vh;
-  /* height: 300px; */
   margin: 24px 20px 0 20px;
 `;
 
@@ -53,7 +52,19 @@ const TitleWrapper = styled.div`
   flex-direction: row;
   width: 100vw;
   justify-content: space-around;
-  gap: 100px;
+  align-items: end;
+  gap: 120px;
+  padding-top: 15px;
+  padding-bottom: 2px;
+  p {
+    height: fit-content;
+  }
+`;
+
+const TitleP = styled.p`
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0;
 `;
 
 const WarningWrapper = styled.div`
@@ -64,6 +75,7 @@ const WarningWrapper = styled.div`
   font-size: 12px;
   font-weight: bold;
   color: "#F44336";
+  height: 30px;
 `;
 
 const ReceiptWrapper = styled.div`
