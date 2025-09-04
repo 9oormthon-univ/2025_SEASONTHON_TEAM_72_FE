@@ -1,9 +1,46 @@
 import styled from "styled-components";
+import React, { useRef } from "react";
 import StartSettlementImage from "../../assets/images/start_settlement_img.svg";
 
 const StartSettlementContent = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLoadReceiptClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+    const selectedFile = files[0];
+    
+    // 파일 크기 검증 (5MB 제한)
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      alert('파일 크기가 너무 큽니다. 5MB 이하의 파일을 선택해주세요.');
+      return;
+    }
+    
+    // 파일 타입 검증
+    if (!selectedFile.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+    
+    console.log("선택된 파일:", selectedFile);
+    }
+  };
+
   return (
     <StartSettlementLayout>
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        style={{ display: "none" }} 
+        aria-label="영수증 이미지 선택"
+      />
+
       <TopSection>
         <Title>새로운 정산을 시작해볼까요?</Title>
         <Subtitle>정산할 품목을 어떤 방식으로 가져올지 정해주세요.</Subtitle>
@@ -12,7 +49,7 @@ const StartSettlementContent = () => {
         </ImageContainer>
       </TopSection>
       <ButtonContainer>
-        <ActionButton>
+        <ActionButton onClick={handleLoadReceiptClick}>
           <ButtonText>영수증 불러오기</ButtonText>
         </ActionButton>
         <ActionButton>
@@ -48,7 +85,7 @@ const TopSection = styled.div`
 const Title = styled.h1`
   color: #000;
   text-align: center;
-  font-family: "NanumSquare", sans-serif; /* 큰따옴표 추가하고 index.css의 폰트명과 일치 */
+  font-family: "NanumSquare", sans-serif;
   font-size: 20px;
   font-style: normal;
   font-weight: 800;
