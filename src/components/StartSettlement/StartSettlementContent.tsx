@@ -8,20 +8,20 @@ const StartSettlementContent = () => {
         <Title>새로운 정산을 시작해볼까요?</Title>
         <Subtitle>정산할 품목을 어떤 방식으로 가져올지 정해주세요.</Subtitle>
         <ImageContainer>
-          <img src={StartSettlementImage} />
+          <img src={StartSettlementImage} alt="정산 시작 이미지" />
         </ImageContainer>
       </TopSection>
-        <ButtonContainer>
-          <ActionButton>
-            <ButtonText>영수증 불러오기</ButtonText>
-          </ActionButton>
-          <ActionButton>
-            <ButtonText>직접 작성하기</ButtonText>
-          </ActionButton>
-        </ButtonContainer>
-        <ParticipationCode>
-          <CodeText>참여코드를 갖고 계신가요?</CodeText>
-        </ParticipationCode>
+      <ButtonContainer>
+        <ActionButton>
+          <ButtonText>영수증 불러오기</ButtonText>
+        </ActionButton>
+        <ActionButton>
+          <ButtonText>직접 작성하기</ButtonText>
+        </ActionButton>
+      </ButtonContainer>
+      <ParticipationCode>
+        <CodeText>참여코드를 갖고 계신가요?</CodeText>
+      </ParticipationCode>
     </StartSettlementLayout>
   );
 };
@@ -38,32 +38,33 @@ const StartSettlementLayout = styled.div`
 `;
 
 const TopSection = styled.div`
-margin-top: 100px;
-display: flex;
+  margin-top: 100px;
+  display: flex;
   flex-direction: column;
   gap: 10px;
   width: 100%;
 `;
 
-
 const Title = styled.h1`
   color: #000;
   text-align: center;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif; /* 큰따옴표 추가하고 index.css의 폰트명과 일치 */
   font-size: 20px;
   font-style: normal;
   font-weight: 800;
   line-height: 130%;
+  margin-bottom: 20px;
 `;
 
 const Subtitle = styled.p`
   color: #000;
   text-align: center;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-size: 12px;
   font-style: normal;
   font-weight: 700;
-  line-height: 130%; 
+  line-height: 130%;
+  margin: 0; /* 기본 마진 제거 */
 `;
 
 const ImageContainer = styled.div`
@@ -71,7 +72,12 @@ const ImageContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 70px;
-  margin-bottom: 180px;
+  margin-bottom: 160px;
+  
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -81,6 +87,7 @@ const ButtonContainer = styled.div`
   width: 100%;
   max-width: 352px;
   margin-bottom: 20px;
+  box-sizing: border-box;
 `;
 
 const ActionButton = styled.button`
@@ -99,20 +106,25 @@ const ActionButton = styled.button`
   &:hover {
     background-color: #c0392b;
   }
+  
+  &:active {
+    transform: translateY(1px);
+  }
 `;
 
 const ButtonText = styled.span`
   color: #FFF;
   text-align: center;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 800;
-  line-height: 130%; 
+  line-height: 130%;
 `;
 
 const ParticipationCode = styled.div`
   cursor: pointer;
+  padding: 10px;
   
   &:hover {
     opacity: 0.8;
@@ -122,10 +134,10 @@ const ParticipationCode = styled.div`
 const CodeText = styled.span`
   color: #6B6B6B;
   text-align: center;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-size: 13px;
   font-style: normal;
   font-weight: 700;
-  line-height: 130%; 
+  line-height: 130%;
   text-decoration: underline;
 `;
