@@ -214,7 +214,7 @@ const DropdownContent = styled.div`
   background: #fff;
   border: 0 1px 1px 1px solid #eee;
   border-radius: 0 0 5px 5px;
-  padding: 6px 16px 12px 16px;
+  padding: 6px 14px 12px 14px;
   animation: ${slideDown} 0.28s ease;
   transform-origin: top center;
   will-change: transform, opacity;
@@ -222,14 +222,14 @@ const DropdownContent = styled.div`
     width: 100%;
     border-collapse: collapse;
     border-top: 2px solid black;
-
+    background-color: white;
     table-layout: fixed;
     font-size: 10px;
     font-weight: 500;
 
     thead,
     tr {
-      background-color: #fff !important;
+      background-color: #fff;
     }
 
     th,
@@ -258,16 +258,35 @@ const DropdownContent = styled.div`
       width: 25%;
     }
     th {
-      background: #f5f5f5;
+      background: #fff;
       font-weight: 700;
       font-size: 10px;
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
     }
     tfoot td {
       border-bottom: none;
       background: #fff;
     }
     tfoot tr:first-child td {
-      border-top: 1.5px dashed #000;
+      border-top: 1px solid white;
+      position: relative;
+      padding-top: 10px;
+    }
+    tfoot tr:first-child td::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 1px;
+      background: repeating-linear-gradient(
+        to right,
+        #000 0 5px,
+        transparent 5px 10px
+      );
+      pointer-events: none;
     }
   }
 `;
@@ -282,10 +301,11 @@ const StatusDot = styled.span<{ $color: string }>`
 
 const ActionButton = styled.button`
   width: 100%;
+  height: 40px;
   margin-top: 16px;
   border: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
