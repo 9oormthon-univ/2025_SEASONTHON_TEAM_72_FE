@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import AppBar from "../components/common/AppBar";
 import { useNavigate } from "react-router-dom";
+import HomeSectionTabs from "../components/Home/HomeSectionTabs";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ const HomePage = () => {
             정산 시작하기
           </StartButton>
         </NewSettlementWrapper>
+        <TabsContainer>
+          <HomeSectionTabs />
+        </TabsContainer>
       </BodyContent>
     </HomePageLayout>
   );
@@ -35,6 +39,7 @@ const BodyContent = styled.div`
   justify-content: center;
   background-color: white;
   padding: 0 20px;
+  flex-direction: column;
 `;
 
 const NewSettlementWrapper = styled.div`
@@ -47,6 +52,10 @@ const NewSettlementWrapper = styled.div`
   border-radius: 12px;
   padding: 18px 0px;
   margin-top: 30px;
+`;
+
+const TabsContainer = styled.div`
+  width: 100%;
 `;
 
 const Title = styled.h1`
