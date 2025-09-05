@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "../components/Layout/Layout";
-import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
 import ReceiptEditPage from "../pages/ReceiptEditPage";
 
 const Router = () => {
@@ -8,7 +7,6 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
           <Route path="/receiptedit" element={<ReceiptEditPage />} />
         </Route>
       </Routes>

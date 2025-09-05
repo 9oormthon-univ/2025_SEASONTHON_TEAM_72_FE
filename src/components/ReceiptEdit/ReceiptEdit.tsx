@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import TopNav from "../common/TopNav";
 import BottomNav from "../common/BottomNav";
-import { SettlementReceipt } from "../ReceiptConfirm/Receipt";
 import { ItemEditSheet } from "./ItemEdit";
 
 const ReceiptEditContent = () => {

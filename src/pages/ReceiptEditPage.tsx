@@ -1,7 +1,7 @@
-import ReceiptEditContent from "../components/ReceiptEdit/ReceiptEditContent";
+import ReceiptEdit from "../components/ReceiptEdit/ReceiptEdit";
 
 const ReceiptEditPage = () => {
-    return <ReceiptEditContent />;
+    return <ReceiptEdit />;
 };
 
 export default ReceiptEditPage;
