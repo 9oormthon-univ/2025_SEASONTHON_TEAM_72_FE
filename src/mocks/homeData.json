@@ -3,30 +3,42 @@
     "id": 101,
     "name": "코스트코",
     "date": 1755820800000,
-    "status": "정산진행중"
+    "status": "IN_PROGRESS"
   },
   {
     "id": 102,
     "name": "휴지 공구!",
     "date": 1756080000000,
-    "status": "입금 필요"
+    "status": "AWAITING_DEPOSIT"
   },
   {
     "id": 103,
     "name": "감자 한 박스",
     "date": 1756339200000,
-    "status": "관리 필요"
+    "status": "NEEDS_ATTENTION"
   },
   {
     "id": 104,
     "name": "수박 소분",
     "date": 1756684800000,
-    "status": "정산진행중"
+    "status": "IN_PROGRESS"
   },
   {
     "id": 105,
     "name": "이마트정산해요",
     "date": 1756857600000,
-    "status": "입금 필요"
+    "status": "AWAITING_DEPOSIT"
+  },
+  {
+    "id": 106,
+    "name": "이마트정산해요",
+    "date": 1756857600000,
+    "status": "DONE"
+  },
+  {
+    "id": 107,
+    "name": "이마트정산해요",
+    "date": 1756857600000,
+    "status": "DONE"
   }
 ]

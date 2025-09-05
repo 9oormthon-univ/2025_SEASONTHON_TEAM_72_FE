@@ -4,7 +4,7 @@ import clockLoaderIcon from "../../assets/icons/clock_loader_icon.svg";
 import creditCardIcon from "../../assets/icons/credit_card_icon.svg";
 import groupsIcon from "../../assets/icons/groups_icon.svg";
 
-export type StatusType = "정산진행중" | "입금 필요" | "관리 필요";
+export type StatusType = "정산진행중" | "입금 필요" | "관리 필요" | "종료";
 
 interface InProgressItemProps {
   title: string;
@@ -17,15 +17,16 @@ const InProgressItem: React.FC<InProgressItemProps> = ({
   dueDate,
   status,
 }) => {
+  const isDone = status === "종료";
   return (
-    <Card>
+    <Card $done={isDone}>
       <TopRow>{title}</TopRow>
       <BottomRow>
         <DueDateBox>
           <CalendarIcon />
           {dueDate}
         </DueDateBox>
-        <StatusBadge $status={status}>
+        <StatusBadge $status={status} $done={isDone}>
           <StatusIcon
             src={
               status === "정산진행중"
@@ -45,7 +46,7 @@ const InProgressItem: React.FC<InProgressItemProps> = ({
 
 export default InProgressItem;
 
-const Card = styled.div`
+const Card = styled.div<{ $done?: boolean }>`
   border: 0.5px solid #d9d9d9;
   border-radius: 5px;
   padding: 10px 12px 12px 15px;
@@ -53,6 +54,8 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
+  background: ${({ $done }) => ($done ? "#f0f0f0" : "#ffffff")};
+  color: ${({ $done }) => ($done ? "#000" : "inherit")};
 `;
 
 const TopRow = styled.div`
@@ -88,7 +91,7 @@ const CalendarIcon = styled(IoCalendarClearOutline)`
   font-size: 10px;
 `;
 
-const StatusBadge = styled.span<{ $status: StatusType }>`
+const StatusBadge = styled.span<{ $status: StatusType; $done?: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -97,9 +100,14 @@ const StatusBadge = styled.span<{ $status: StatusType }>`
   font-size: 8px;
   font-weight: 700;
   border-radius: 2px;
-  color: #fff;
-  ${({ $status }) =>
-    $status === "정산진행중"
+  color: ${({ $done }) => ($done ? "#000" : "#fff")};
+  ${({ $status, $done }) =>
+    $done
+      ? css`
+          background: #e0e0e0;
+          border: 1px solid #cfcfcf;
+        `
+      : $status === "정산진행중"
       ? css`
           background: #00d337;
           border: 1px solid #00d337;
