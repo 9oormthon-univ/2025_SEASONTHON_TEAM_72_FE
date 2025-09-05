@@ -2,15 +2,20 @@ import styled from "styled-components";
 import profileImg from "../../assets/images/profile_img.svg";
 import alarmIcon from "../../assets/icons/alarm_icon.svg";
 import mypageIcon from "../../assets/images/mypage_icon.svg";
+import { useNavigate } from "react-router-dom";
 
 const AppBar = () => {
+  const navigate = useNavigate();
   return (
     <BarWrapper>
       <Left>
         <IconImage src={profileImg} alt="profile" />
       </Left>
       <Right>
-        <IconButton aria-label="alarm">
+        <IconButton
+          aria-label="alarm"
+          onClick={() => navigate(`/alarm`)}
+        >
           <SmallIcon src={alarmIcon} alt="alarm" />
         </IconButton>
         <IconButton aria-label="mypage">
