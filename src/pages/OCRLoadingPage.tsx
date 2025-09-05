@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import hourglassIcon from '../assets/icons/hourglass-icon.svg';
 import OCRLoading from '../components/OCRLoading/OCRLoading';
-import ReceiptUpload from '../components/OCRLoading/ReceiptUpload';
-import ReceiptResult from '../components/OCRLoading/ReceiptResult';
 import type { OCRResult, ReceiptData, OCRApiInterface } from '../apis/ocrApi';
 import { ocrApi } from '../apis/ocrApi';
 
