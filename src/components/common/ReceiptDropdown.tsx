@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
+import { useLocation } from "react-router-dom";
+import arrowIcon from "../../assets/icons/keyboard_arrow_down.svg";
+import { useReceiptOpenStore } from "../../stores/useReceiptOpenStore";
 
 interface ReceiptItem {
   name: string;
@@ -14,25 +17,107 @@ interface ReceiptData {
 
 interface ReceiptDropdownProps {
   data: ReceiptData;
+  myName?: string;
+  initialPaid?: boolean;
+  onStatusChange?: (paid: boolean) => void;
 }
 
-const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({ data }) => {
-  const [open, setOpen] = useState(false);
+const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
+  data,
+  initialPaid = false,
+  onStatusChange,
+}) => {
+  // TODO: 내 정보 전역 상태로 추가
+  const myName = "이채영";
+  const { openUser, setOpenUser } = useReceiptOpenStore();
+  const open = openUser === data.user;
+  const location = useLocation();
+  const isManagerPage = location.pathname === "/result/manager";
+  const isMemberPage = location.pathname === "/result/member";
+
+  const mine = data.user === myName;
+  const isTotal = /전체/.test(data.user);
+  const [isPaid, setIsPaid] = useState<boolean>(initialPaid);
 
   const totalQuantity = data.items.reduce(
     (sum, item) => sum + item.quantity,
     0
   );
   const totalPrice = data.items.reduce((sum, item) => sum + item.price, 0);
-  const total = data.items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const togglePaid = () => {
+    setIsPaid((prev) => {
+      const next = !prev;
+      onStatusChange?.(next);
+      return next;
+    });
+  };
+
+  const showStatusDot = isManagerPage && !mine && !isTotal;
+  const statusDotColor = isPaid ? "#07A320" : "#f44336";
+
+  type ActionBtn = { label: string; color: string; onClick: () => void };
+  let actionButtons: ActionBtn[] = [];
+
+  // Manager: 다른 사람 & 전체 아님
+  if (!isTotal && isManagerPage && !mine) {
+    if (!isPaid) {
+      actionButtons = [
+        {
+          label: "독촉하기",
+          color: "#f44336",
+          onClick: () => {
+            // TODO: 독촉 API 연동
+            console.log(`remind payment -> ${data.user}`);
+          },
+        },
+        {
+          label: "입금 완료하기",
+          color: "#00D337",
+          onClick: () => {
+            setIsPaid(true);
+            onStatusChange?.(true);
+          },
+        },
+      ];
+    } else {
+      // 정산 완료 -> 취소 버튼 하나
+      actionButtons = [
+        {
+          label: "입금 취소하기",
+          color: "#f44336",
+          onClick: () => {
+            setIsPaid(false);
+            onStatusChange?.(false);
+          },
+        },
+      ];
+    }
+  } else if (!isTotal && isMemberPage && mine) {
+    actionButtons = [
+      {
+        label: isPaid ? "입금 취소하기" : "입금 완료하기",
+        color: isPaid ? "#f44336" : "#00D337",
+        onClick: () => togglePaid(),
+      },
+    ];
+  }
 
   return (
     <ReceiptDropdownLayout>
-      <DropdownCard onClick={() => setOpen((prev) => !prev)} isOpen={open}>
-        <span>{data.user}</span>
+      <DropdownCard
+        onClick={() => setOpenUser(open ? null : data.user)}
+        isOpen={open}
+      >
+        <CardLeft>
+          <span>{mine ? "내 영수증 📌" : data.user}</span>
+          {showStatusDot && <StatusDot aria-hidden $color={statusDotColor} />}
+        </CardLeft>
+        <CardRight>
+          {!open && (
+            <TotalPriceText>{totalPrice.toLocaleString()}원</TotalPriceText>
+          )}
+          <ArrowImg aria-hidden $open={open} src={arrowIcon} alt="" />
+        </CardRight>
       </DropdownCard>
       {open && (
         <DropdownContent role="region" aria-label={`${data.user} 영수증 상세`}>
@@ -63,6 +148,29 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({ data }) => {
               </tr>
             </tfoot>
           </table>
+          {actionButtons.length === 1 && (
+            <ActionButton
+              type="button"
+              style={{ background: actionButtons[0].color }}
+              onClick={actionButtons[0].onClick}
+            >
+              {actionButtons[0].label}
+            </ActionButton>
+          )}
+          {actionButtons.length === 2 && (
+            <ButtonsRow>
+              {actionButtons.map((b) => (
+                <RowButton
+                  key={b.label}
+                  type="button"
+                  style={{ background: b.color }}
+                  onClick={b.onClick}
+                >
+                  {b.label}
+                </RowButton>
+              ))}
+            </ButtonsRow>
+          )}
         </DropdownContent>
       )}
     </ReceiptDropdownLayout>
@@ -82,10 +190,37 @@ const DropdownCard = styled.div<{ isOpen: boolean }>`
   border: ${({ isOpen }) => (isOpen ? "" : "0.5px solid #d9d9d9")};
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  justify-content: space-between;
+  padding: 0 12px 0 16px;
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
+`;
+
+const CardLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const CardRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const TotalPriceText = styled.span`
+  font-size: 12px;
+  font-weight: 800;
+  color: #000;
+`;
+
+const ArrowImg = styled.img<{ $open: boolean }>`
+  width: 18px;
+  height: 18px;
+  transform: rotate(${({ $open }) => ($open ? "180deg" : "0deg")});
+  transition: transform 0.22s ease;
+  opacity: 0.75;
 `;
 
 const slideDown = keyframes`
@@ -98,7 +233,7 @@ const DropdownContent = styled.div`
   background: #fff;
   border: 0 1px 1px 1px solid #eee;
   border-radius: 0 0 5px 5px;
-  padding: 6px 16px 12px 16px;
+  padding: 6px 14px 12px 14px;
   animation: ${slideDown} 0.28s ease;
   transform-origin: top center;
   will-change: transform, opacity;
@@ -106,14 +241,14 @@ const DropdownContent = styled.div`
     width: 100%;
     border-collapse: collapse;
     border-top: 2px solid black;
-
+    background-color: white;
     table-layout: fixed;
     font-size: 10px;
     font-weight: 500;
 
     thead,
     tr {
-      background-color: #fff !important;
+      background-color: #fff;
     }
 
     th,
@@ -142,16 +277,79 @@ const DropdownContent = styled.div`
       width: 25%;
     }
     th {
-      background: #f5f5f5;
+      background: #fff;
       font-weight: 700;
       font-size: 10px;
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
     }
     tfoot td {
       border-bottom: none;
       background: #fff;
     }
     tfoot tr:first-child td {
-      border-top: 1.5px dashed #000;
+      border-top: 1px solid white;
+      position: relative;
+      padding-top: 10px;
+    }
+    tfoot tr:first-child td::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 1px;
+      background: repeating-linear-gradient(
+        to right,
+        #000 0 5px,
+        transparent 5px 10px
+      );
+      pointer-events: none;
     }
   }
+`;
+
+const StatusDot = styled.span<{ $color: string }>`
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: ${({ $color }) => $color};
+`;
+
+const ActionButton = styled.button`
+  width: 100%;
+  height: 40px;
+  margin-top: 16px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ButtonsRow = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  margin-top: 16px;
+`;
+
+const RowButton = styled.button`
+  flex: 1 1 0;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

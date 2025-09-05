@@ -2,21 +2,20 @@ import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 
 interface SelectionAdjusterProps {
-  initialValue: number;
-  max: number; // quantity
+  assignedValue: number; // 외부에서 내가 할당한 값
+  max: number; // quantity 한도
   onChange: (value: number) => void;
 }
 
 const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
-  initialValue,
+  assignedValue,
   max,
   onChange,
 }) => {
-  const [value, setValue] = useState<number>(initialValue);
+  const [value, setValue] = useState<number>(assignedValue);
   const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // editing 전환 시 focus
   useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus();
@@ -24,36 +23,29 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
     }
   }, [editing]);
 
-  // 초기값이 외부에서 변경되었을 때(예: Drawer 재열림) 편집 중이 아니면 동기화
   useEffect(() => {
-    if (!editing) setValue(initialValue);
-  }, [initialValue, editing]);
+    if (!editing) setValue(assignedValue);
+  }, [assignedValue, editing]);
 
   const clamp = (v: number) => {
     if (Number.isNaN(v) || v < 0) return 0;
     if (v > max) v = max;
-    const rounded = Math.round(v * 100) / 100;
-    return rounded;
+    return Math.trunc(v); // 정수 강제
   };
 
   const stepChange = (delta: number) => {
     setValue((prev) => {
       const next = prev + delta;
-      const snapped = Math.round(next / 0.5) * 0.5;
-      const finalVal = clamp(snapped);
+      const finalVal = clamp(next);
       onChange(finalVal);
       return finalVal;
     });
   };
 
   const handleDirectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = parseFloat(e.target.value);
-    if (Number.isNaN(raw)) {
-      setValue(0);
-    } else {
-      const v = clamp(raw);
-      setValue(v);
-    }
+    const raw = parseInt(e.target.value, 10);
+    if (Number.isNaN(raw)) return setValue(0);
+    setValue(clamp(raw));
   };
 
   const commit = () => {
@@ -66,7 +58,7 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") commit();
     if (e.key === "Escape") {
-      setValue(initialValue);
+  setValue(assignedValue);
       setEditing(false);
     }
   };
@@ -77,7 +69,7 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
         <SideButton
           type="button"
           aria-label="decrease"
-          onClick={() => stepChange(-0.5)}
+          onClick={() => stepChange(-1)}
         >
           -
         </SideButton>
@@ -89,23 +81,19 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
               onChange={handleDirectChange}
               onKeyDown={onKey}
               onBlur={commit}
-              step={0.5}
+              step={1}
               min={0}
               max={max}
               type="number"
             />
           ) : (
-            <ValueText>
-              {Number.isInteger(value)
-                ? value
-                : value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "")}
-            </ValueText>
+            <ValueText>{value}</ValueText>
           )}
         </ValueArea>
         <SideButton
           type="button"
           aria-label="increase"
-          onClick={() => stepChange(0.5)}
+          onClick={() => stepChange(1)}
         >
           +
         </SideButton>

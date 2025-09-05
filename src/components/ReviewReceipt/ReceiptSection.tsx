@@ -1,38 +1,41 @@
 import styled from "styled-components";
 import { MdNotInterested } from "react-icons/md";
 import ReceiptDropdown from "../common/ReceiptDropdown";
+import EmptyDropdown from "../common/EmptyDropdown";
+import {
+  dummyData2,
+  dummyDataMe,
+  dummyDataEntire,
+} from "../../pages/ReviewReceiptPage";
 
-interface ReceiptItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
-
-interface ReceiptData {
-  user: string;
-  items: ReceiptItem[];
-}
-
-interface ReceiptSectionProps {
-  data: ReceiptData[];
-}
-
-const ReceiptSection: React.FC<ReceiptSectionProps> = ({ data }) => (
-  <ReceiptDiv>
-    <TitleWrapper>
-      <p style={{ fontSize: "14px", fontWeight: 800 }}>참여자 영수증</p>
-      <WarningWrapper>
-        <MdNotInterested style={{ fontSize: "16px", color: "#F44336" }} />
-        <p style={{ color: "#F44336" }}>확정된 금액 아님</p>
-      </WarningWrapper>
-    </TitleWrapper>
-    <ReceiptWrapper>
-      {data.map((it) => (
-        <ReceiptDropdown key={it.user} data={it} />
-      ))}
-    </ReceiptWrapper>
-  </ReceiptDiv>
-);
+const ReceiptSection = () => {
+  // TODO: api로 인원 제한 수 get 예정
+  const LIMIT = 6;
+  const hap = 5;
+  return (
+    <ReceiptDiv>
+      <TitleWrapper>
+        <TitleP>참여자 영수증</TitleP>
+        <WarningWrapper>
+          <MdNotInterested style={{ fontSize: "16px", color: "#F44336" }} />
+          <p style={{ color: "#F44336" }}>확정된 금액 아님</p>
+        </WarningWrapper>
+      </TitleWrapper>
+      <ReceiptWrapper>
+        {/* TODO: api 연결 예정 */}
+        <ReceiptDropdown data={dummyDataMe} />
+        <ReceiptDropdown data={dummyDataEntire} />
+        {dummyData2.map((it) => (
+          <ReceiptDropdown key={it.user} data={it} />
+        ))}
+        {LIMIT - hap > 0 &&
+          Array.from({ length: LIMIT - hap }).map((_, i) => (
+            <EmptyDropdown key={`empty-${i}`} />
+          ))}
+      </ReceiptWrapper>
+    </ReceiptDiv>
+  );
+};
 
 export default ReceiptSection;
 
@@ -44,7 +47,6 @@ const ReceiptDiv = styled.div`
   background-color: #eeeeee;
   width: auto;
   height: 100vh;
-  /* height: 300px; */
   margin: 24px 20px 0 20px;
 `;
 
@@ -53,7 +55,19 @@ const TitleWrapper = styled.div`
   flex-direction: row;
   width: 100vw;
   justify-content: space-around;
-  gap: 100px;
+  align-items: end;
+  gap: 120px;
+  padding-top: 15px;
+  padding-bottom: 2px;
+  p {
+    height: fit-content;
+  }
+`;
+
+const TitleP = styled.p`
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0;
 `;
 
 const WarningWrapper = styled.div`
@@ -64,6 +78,7 @@ const WarningWrapper = styled.div`
   font-size: 12px;
   font-weight: bold;
   color: "#F44336";
+  height: 30px;
 `;
 
 const ReceiptWrapper = styled.div`
