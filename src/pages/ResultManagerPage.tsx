@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
-import { dummyData2, dummyDataEntire, dummyDataMe } from "./ReviewReceiptPage";
+import settlementManagerData from "../mocks/settlementManagerData.json";
 import { useState, useEffect } from "react";
 import FloatingAlert from "../components/Result/FloatingAlert";
 
@@ -26,12 +26,26 @@ const ResultManagerPage = () => {
         <TitleP>하나로마트 정산</TitleP>
       </TitleWrapper>
       <ReceiptDiv>
-        <ReceiptDropdown data={dummyDataMe} />
-        <ReceiptDropdown data={dummyDataEntire} />
-        {dummyData2.map((it) => (
-          <ReceiptDropdown key={it.user} data={it} />
-        ))}
-        <button onClick={trigger}>show floating alert</button>
+        {(() => {
+          const myNameKey = myName;
+          const list = settlementManagerData.data;
+          const mine = list.find((d) => d.user === myNameKey);
+          const total = list.find((d) => /전체/.test(d.user));
+          const others = list.filter((d) => d !== mine && d !== total);
+          const ordered = [mine, total, ...others.filter(Boolean)];
+          return (
+            <>
+              {ordered.filter(Boolean).map((entry) => (
+                <ReceiptDropdown
+                  key={entry!.user}
+                  initialPaid={entry!.is_paid}
+                  data={{ user: entry!.user, items: entry!.items }}
+                />
+              ))}
+              <button onClick={trigger}>show floating alert</button>
+            </>
+          );
+        })()}
       </ReceiptDiv>
       <FloatingAlert
         show={showAlert}

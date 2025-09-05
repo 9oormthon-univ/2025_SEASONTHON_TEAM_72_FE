@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
 import AccountListItem from "../components/Result/AccountListItem";
-import { dummyData2, dummyDataEntire, dummyDataMe } from "./ReviewReceiptPage";
+import settlementManagerData from "../mocks/settlementManagerData.json";
 import { SettleupResultPageLayout, TitleWrapper } from "./ResultManagerPage";
+import bankData from "../mocks/bankData.json";
 
 const ResultMemberPage = () => {
   return (
@@ -13,24 +14,35 @@ const ResultMemberPage = () => {
       <ContentSection>
         <WarningDiv>❗입금 시 입금자명은 참여 닉네임으로 해주세요.</WarningDiv>
         <ReceiptDiv>
-          <ReceiptDropdown data={dummyDataMe} />
-          <ReceiptDropdown data={dummyDataEntire} />
-          {dummyData2.map((it) => (
-            <ReceiptDropdown key={it.user} data={it} />
-          ))}
+          {(() => {
+            const myName = "이채영"; // TODO global state
+            const list = settlementManagerData.data;
+            const mine = list.find((d) => d.user === myName);
+            const total = list.find((d) => /전체/.test(d.user));
+            const others = list.filter((d) => d !== mine && d !== total);
+            const ordered = [mine, total, ...others.filter(Boolean)];
+            return ordered
+              .filter(Boolean)
+              .map((entry) => (
+                <ReceiptDropdown
+                  key={entry!.user}
+                  data={{ user: entry!.user, items: entry!.items }}
+                />
+              ));
+          })()}
         </ReceiptDiv>
         <AccountDiv>
           <p>입금 계좌</p>
-          <AccountListItem
-            bank="우리"
-            accountNumber="3333-18-8210203"
-            owner="이채영"
-          />
-          <AccountListItem
-            bank="우리"
-            accountNumber="3333-18-8210203"
-            owner="이채영"
-          />
+          {bankData.map((it) => {
+            return (
+              <AccountListItem
+                key={it.account_id}
+                bank={it.bank_name}
+                accountNumber={it.account_number}
+                owner={it.user_name}
+              />
+            );
+          })}
         </AccountDiv>
       </ContentSection>
     </SettleupResultPageLayout>

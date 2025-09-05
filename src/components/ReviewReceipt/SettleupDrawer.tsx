@@ -195,11 +195,7 @@ const DrawerContainer = styled.div<{ open: boolean }>`
   flex-direction: column;
   padding: 0 20px 20px;
   box-sizing: border-box;
-  /* height dynamic to avoid clipping when warning bar appears */
-  min-height: 260px;
-  max-height: 340px;
-  height: auto;
-  overflow: hidden;
+  height: 260px;
 `;
 
 const Inner = styled.div`
@@ -207,7 +203,6 @@ const Inner = styled.div`
   flex-direction: column;
   flex: 1;
   padding-top: 14px;
-  max-height: 100%;
 `;
 
 const HeaderRow = styled.div`
