@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
 import pizzaImg from "../../assets/images/pizza_modal_img.svg";
-import cancelIcon from "../../assets/icons/cancel_icon.svg";
 
 interface LinkShareModalProps {
   open: boolean;
@@ -16,26 +15,6 @@ const LinkShareModal: React.FC<LinkShareModalProps> = ({
   onClose,
 }) => {
   const [portalEl, setPortalEl] = useState<HTMLElement | null>(null);
-
-  const copyShareCode = async () => {
-    if (!code) return;
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(code);
-      } else {
-        const ta = document.createElement("textarea");
-        ta.value = code;
-        ta.style.position = "fixed";
-        ta.style.top = "-1000px";
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-      }
-    } catch (err) {
-      console.error("copy failed", err);
-    }
-  };
 
   useEffect(() => {
     let el = document.getElementById("modal-root") as HTMLElement | null;
@@ -59,29 +38,12 @@ const LinkShareModal: React.FC<LinkShareModalProps> = ({
         onClick={onClose}
       >
         <ModalInner onClick={(e) => e.stopPropagation()}>
-          <CloseButton type="button" aria-label="닫기" onClick={onClose}>
-            <img src={cancelIcon} alt="" />
-          </CloseButton>
           <ImageWrapper>
             <PizzaImg src={pizzaImg} alt="피자 아이콘" />
           </ImageWrapper>
           <TextWrapper>
             <Title>친구에게 링크를 공유해 주세요!</Title>
-            <InfoText>클릭 시 참여코드가 복사됩니다.</InfoText>
-            <CodeTag
-              role="button"
-              tabIndex={0}
-              aria-label="참여 코드 복사"
-              onClick={copyShareCode}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  copyShareCode();
-                }
-              }}
-            >
-              참여 코드: {code}
-            </CodeTag>
+            <CodeTag>참여 코드: {code}</CodeTag>
           </TextWrapper>
         </ModalInner>
       </ModalWrapper>
@@ -92,6 +54,8 @@ const LinkShareModal: React.FC<LinkShareModalProps> = ({
 
 export default LinkShareModal;
 
+// Animations
+// translate 는 Wrapper 에서만 적용하고, 내부 애니메이션에서는 scale/opacity 만 다뤄 수평 점프 방지
 const popIn = keyframes`
   from { transform: scale(.94); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
@@ -123,32 +87,11 @@ const ModalInner = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 50px 16px 20px;
+  padding: 50px 16px 20px; /* 상단 이미지 자리 확보 */
   box-sizing: border-box;
   animation: ${popIn} 0.28s ease;
   will-change: transform, opacity;
   overflow: visible;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 11px;
-  height: 11px;
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    pointer-events: none;
-  }
 `;
 
 const ImageWrapper = styled.div`
@@ -174,7 +117,7 @@ const TextWrapper = styled.div`
   height: fit-content;
   justify-content: center;
   align-items: center;
-  margin-top: 46px;
+  padding-top: 30px;
 `;
 
 const Title = styled.p`
@@ -183,15 +126,9 @@ const Title = styled.p`
   text-align: center;
   line-height: 1.3;
   color: #000;
-  margin: 0;
+  margin-bottom: 6px;
 `;
 
-const InfoText = styled.p`
-  font-size: 10px;
-  color: #6b6b6b;
-  font-weight: 500;
-  margin: 6px 0 6px 0;
-`;
 const CodeTag = styled.div`
   width: fit-content;
   background: #f44336;
@@ -202,5 +139,4 @@ const CodeTag = styled.div`
   border-radius: 30px;
   line-height: 1;
   text-align: center;
-  cursor: pointer;
 `;
