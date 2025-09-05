@@ -1,36 +1,95 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import hourglassIcon from '../assets/icons/hourglass-icon.svg';
-import OCRLoadingContent from '../components/OCRLoading/OCRLoadingContent';
-import type { OCRResult } from '../apis/ocrApi';
+import OCRLoading from '../components/OCRLoading/OCRLoading';
+import ReceiptUpload from '../components/OCRLoading/ReceiptUpload';
+import ReceiptResult from '../components/OCRLoading/ReceiptResult';
+import type { OCRResult, ReceiptData, OCRApiInterface } from '../apis/ocrApi';
+import { ocrApi } from '../apis/ocrApi';
+
+type PageState = 'upload' | 'loading' | 'result';
 
 const OCRLoadingPage: React.FC = () => {
-  // 데모용: 더미 이미지 파일 생성 (백엔드/라우팅 없이 화면만 보기)
-  const demoFileRef = React.useRef<File | null>(null);
-  if (!demoFileRef.current) {
-    demoFileRef.current = new File(['demo'], 'demo.png', { type: 'image/png' });
-  }
+  const [pageState, setPageState] = useState<PageState>('upload');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+
+  const handleUpload = (file: File) => {
+    setImageFile(file);
+    setPageState('loading');
+  };
 
   const handleSuccess = (result: OCRResult) => {
-    console.log('OCR 성공 (데모 모드):', result);
-    // 화면 이동 없음
+    try {
+      const parsedData = (ocrApi as OCRApiInterface).parseReceiptData(result);
+      setReceiptData(parsedData);
+      setPageState('result');
+    } catch (error) {
+      // 파싱 실패해도 로그만 남기고 기본 데이터로 결과 페이지 표시
+      console.error('영수증 데이터 파싱 실패, 기본 데이터 사용:', error);
+      
+      const defaultData: ReceiptData = {
+        storeName: '상점명 없음',
+        date: new Date().toLocaleDateString('ko-KR'),
+        items: [
+          {
+            name: '상품 정보 없음',
+            count: 1,
+            unitPrice: 0,
+            totalPrice: 0,
+          }
+        ],
+        totalAmount: 0,
+      };
+      
+      setReceiptData(defaultData);
+      setPageState('result');
+    }
   };
 
-  const handleError = (error: string) => {
-    console.error('OCR 실패 (데모 모드):', error);
-    // 화면 이동 없음
+  const handleRetry = () => {
+    setPageState('upload');
+    setImageFile(null);
+    setReceiptData(null);
   };
 
-  return (
-    <OCRLoadingPageLayout>
-      <LoadingImage src={hourglassIcon} alt="로딩 중" />
-      <OCRLoadingContent
-        imageFile={demoFileRef.current}
-        onSuccess={handleSuccess}
-        onError={handleError}
-      />
-    </OCRLoadingPageLayout>
-  );
+  const handleConfirm = () => {
+    // 영수증 데이터를 다음 단계로 전달
+    console.log('확인된 영수증 데이터:', receiptData);
+    // TODO: 다음 페이지로 이동하거나 데이터 저장
+  };
+
+  const renderContent = () => {
+    switch (pageState) {
+      case 'upload':
+        return <ReceiptUpload onUpload={handleUpload} />;
+      
+      case 'loading':
+        return imageFile ? (
+          <OCRLoadingPageLayout>
+            <LoadingImage src={hourglassIcon} alt="로딩 중" />
+            <OCRLoading
+              imageFile={imageFile}
+              onSuccess={handleSuccess}
+            />
+          </OCRLoadingPageLayout>
+        ) : null;
+      
+      case 'result':
+        return receiptData ? (
+          <ReceiptResult
+            receiptData={receiptData}
+            onRetry={handleRetry}
+            onConfirm={handleConfirm}
+          />
+        ) : null;
+      
+      default:
+        return <ReceiptUpload onUpload={handleUpload} />;
+    }
+  };
+
+  return renderContent();
 };
 
 export default OCRLoadingPage;
@@ -41,8 +100,9 @@ const OCRLoadingPageLayout = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  height: 100vh;
   overflow: hidden;
+  box-sizing: border-box;
 `;
 
 const LoadingImage = styled.img`
