@@ -1,7 +1,7 @@
-import InvitationCodeContent from "../components/InvitationCode/InvitationCodeContent";
+import InvitationCode from "../components/InvitationCode/InvitationCode";
 
 const InvitationCodePage = () => {
-    return <InvitationCodeContent />;
+    return <InvitationCode />;
 };
 
 export default InvitationCodePage;

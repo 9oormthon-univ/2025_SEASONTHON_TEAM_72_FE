@@ -30,40 +30,88 @@ interface ApiError {
     status?: number;
 }
 
-const InvitationCodeContent = () => {
+// 로딩 상태 타입
+type LoadingState = 'verifying' | 'joining' | null;
+
+const InvitationCode = () => {
     const [codes, setCodes] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [loadingStep, setLoadingStep] = useState<LoadingState>(null);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+    const abortControllerRef = useRef<AbortController | null>(null);
+
+    // 컴포넌트 언마운트 시 진행 중인 요청 취소
+    useEffect(() => {
+        return () => {
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+        };
+    }, []);
 
     const handleInputChange = useCallback((index: number, value: string) => {
         const filteredValue = value.replace(/[^A-Za-z0-9]/g, '');
         if (filteredValue.length > 1) return;
         
-        const newCodes = [...codes];
-        newCodes[index] = filteredValue.toUpperCase();
-        setCodes(newCodes);
+        setCodes(prev => {
+            const newCodes = [...prev];
+            newCodes[index] = filteredValue.toUpperCase();
+            return newCodes;
+        });
         setError(''); // 입력 시 에러 메시지 초기화
 
         if (filteredValue && index < 5) {
             inputRefs.current[index + 1]?.focus();
         }
-    }, [codes]);
+    }, []);
 
     const handleKeyDown = useCallback((index: number, e: React.KeyboardEvent) => {
-        if (e.key === 'Backspace' && !codes[index] && index > 0) {
-            inputRefs.current[index - 1]?.focus();
+        setCodes(prev => {
+            if (e.key === 'Backspace' && !prev[index] && index > 0) {
+                inputRefs.current[index - 1]?.focus();
+            }
+            return prev;
+        });
+    }, []);
+
+    // 붙여넣기 처리
+    const handlePaste = useCallback((e: React.ClipboardEvent, index: number) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData('text').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+        
+        if (pastedText.length === 6) {
+            setCodes(pastedText.split(''));
+            setError('');
+            // 마지막 입력 필드로 포커스 이동
+            inputRefs.current[5]?.focus();
+        } else if (pastedText.length > 0) {
+            setCodes(prev => {
+                const newCodes = [...prev];
+                for (let i = 0; i < Math.min(pastedText.length, 6 - index); i++) {
+                    newCodes[index + i] = pastedText[i];
+                }
+                return newCodes;
+            });
+            setError('');
+            // 적절한 위치로 포커스 이동
+            const nextFocusIndex = Math.min(index + pastedText.length, 5);
+            inputRefs.current[nextFocusIndex]?.focus();
         }
-    }, [codes]);
+    }, []);
 
     // 초대코드 유효성 검증 API 호출
-    const verifyInvitationCode = useCallback(async (code: string): Promise<CodeVerificationResponse> => {
+    const verifyInvitationCode = useCallback(async (
+        code: string, 
+        signal: AbortSignal
+    ): Promise<CodeVerificationResponse> => {
         try {
             const response = await fetch(`${API_ENDPOINTS.VERIFY}?code=${code}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                signal,
             });
             
             if (!response.ok) {
@@ -76,13 +124,19 @@ const InvitationCodeContent = () => {
             
             return await response.json();
         } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') {
+                throw new Error('요청이 취소되었습니다.');
+            }
             console.error('코드 검증 실패:', error);
             throw error;
         }
     }, []);
 
     // 초대코드로 참여 API 호출
-    const joinWithInvitationCode = useCallback(async (code: string): Promise<JoinResponse> => {
+    const joinWithInvitationCode = useCallback(async (
+        code: string, 
+        signal: AbortSignal
+    ): Promise<JoinResponse> => {
         try {
             const response = await fetch(API_ENDPOINTS.JOIN, {
                 method: 'POST',
@@ -90,6 +144,7 @@ const InvitationCodeContent = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ code }),
+                signal,
             });
             
             if (!response.ok) {
@@ -102,11 +157,15 @@ const InvitationCodeContent = () => {
             
             return await response.json();
         } catch (error) {
+            if (error instanceof Error && error.name === 'AbortError') {
+                throw new Error('요청이 취소되었습니다.');
+            }
             console.error('참여 실패:', error);
             throw error;
         }
     }, []);
 
+    // 코드 제출 처리
     const handleSubmit = useCallback(async () => {
         const codeString = codes.join('');
         if (codeString.length < 6) {
@@ -114,31 +173,31 @@ const InvitationCodeContent = () => {
             return;
         }
 
+        // 이전 요청이 있다면 취소
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+
+        // 새로운 AbortController 생성
+        abortControllerRef.current = new AbortController();
+        const signal = abortControllerRef.current.signal;
+
         setIsLoading(true);
         setError('');
 
         try {
-            // 1. 먼저 코드 유효성 검증
-            const verificationResult = await verifyInvitationCode(codeString);
+            // 코드 유효성 검증
+            setLoadingStep('verifying');
+            const verificationResult = await verifyInvitationCode(codeString, signal);
             
             if (!verificationResult.isValid) {
                 setError('유효하지 않은 참여 코드입니다.');
                 return;
             }
 
-            // 2. 만료 시간 체크 (선택적)
-            if (verificationResult.expirationTime) {
-                const expirationDate = new Date(verificationResult.expirationTime);
-                const currentDate = new Date();
-                
-                if (currentDate > expirationDate) {
-                    setError('만료된 참여 코드입니다.');
-                    return;
-                }
-            }
-
-            // 3. 유효한 코드라면 참여 진행
-            const joinResult = await joinWithInvitationCode(codeString);
+            // 유효한 코드라면 참여 진행
+            setLoadingStep('joining');
+            const joinResult = await joinWithInvitationCode(codeString, signal);
             
             console.log('참여 성공:', {
                 participantId: joinResult.participantId,
@@ -151,23 +210,47 @@ const InvitationCodeContent = () => {
             // 성공 시 다음 페이지로 이동 또는 상태 업데이트
             // 예: router.push('/settlement/' + joinResult.settlementId);
             
-        } catch (error) {
+       } catch (error) {
             console.error('처리 실패:', error);
+            // 에러 발생 시 코드 리셋
+            setCodes(['', '', '', '', '', '']);
+            
             if (error instanceof Error) {
-                setError(error.message);
+                // 인원 초과 에러 체크
+                if (error.message.includes('초과') || error.message.includes('exceed') || error.message.includes('full')) {
+                    setError('입장 가능한 인원이 초과 되었습니다.');
+                } else {
+                    setError('참여 코드를 다시 확인해 주세요.');
+                }
             } else {
-                setError('참여 코드 처리 중 오류가 발생했습니다.');
+                setError('참여 코드를 다시 확인해 주세요.');
             }
+            // 첫 번째 입력 필드로 포커스 이동
+            inputRefs.current[0]?.focus();
         } finally {
             setIsLoading(false);
+            setLoadingStep(null);
+            abortControllerRef.current = null;
         }
     }, [codes, verifyInvitationCode, joinWithInvitationCode]);
-
+    
+    // 6자리 입력 완료 시 자동 제출
     useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
         const codeString = codes.join('');
+        
         if (codeString.length === 6 && !isLoading) {
-            handleSubmit(); // 6자리 모두 입력되면 자동으로 제출
+            // 약간의 지연을 두어 사용자가 입력을 완료할 시간을 줌
+            timeoutId = setTimeout(() => {
+                handleSubmit(); 
+            }, 300);
         }
+        
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+        };
     }, [codes, isLoading, handleSubmit]);
 
     return (
@@ -182,19 +265,22 @@ const InvitationCodeContent = () => {
                             value={code}
                             onChange={(e) => handleInputChange(index, e.target.value)}
                             onKeyDown={(e) => handleKeyDown(index, e)}
+                            onPaste={(e) => handlePaste(e, index)}
                             maxLength={1}
                             type="text"
                             $filled={!!code}
+                            $hasError={!!error}
                             disabled={isLoading}
                             aria-label={`참여 코드 ${index + 1}번째 자리`}
                             autoComplete="off"
+                            inputMode="numeric"
                         />
                     ))}
                 </CodeInputContainer>
                 {error && (
                     <ErrorMessage>
                         <ErrorIconImage src={ErrorIcon} alt="오류" />
-                        "참여 코드를 다시 확인해 주세요."
+                        {error}
                     </ErrorMessage>
                 )}
             </ContentContainer>
@@ -202,7 +288,7 @@ const InvitationCodeContent = () => {
     );
 };
 
-export default InvitationCodeContent;
+export default InvitationCode;
 
 const InvitationCodePageLayout = styled.div`
     display: flex;
@@ -222,7 +308,7 @@ const ContentContainer = styled.div`
 `;
 
 const Title = styled.h1`
-    font-family: NanumSquare_ac;
+    font-family: "NanumSquare";
     font-size: 17px;
     font-style: normal;
     font-weight: 800;
@@ -238,12 +324,15 @@ const CodeInputContainer = styled.div`
     margin-bottom: 20px;
 `;
 
-const CodeInput = styled.input<{ $filled: boolean }>`
+const CodeInput = styled.input<{ $filled: boolean; $hasError: boolean }>`
     width: 30px;
     height: 40px;
     border-radius: 8px;
     
-    border: 2px solid ${props => props.$filled ? '#F44336' : '#D9D9D9'};
+    border: 2px solid ${props => {
+        if (props.$hasError) return '#F44336';
+        return props.$filled ? '#F44336' : '#D9D9D9';
+    }};
     background-color: ${props => props.$filled ? '#F44336' : '#D9D9D9'};
     color: ${props => props.$filled ? '#FFFFFF' : '#000000'};
     text-align: center;
@@ -255,7 +344,6 @@ const CodeInput = styled.input<{ $filled: boolean }>`
     &:focus {
         border-color: #F44336;
         background-color: ${props => props.$filled ? '#F44336' : '#FFFFFF'};
-        outline: none;
     }
 
     &:disabled {
@@ -266,6 +354,11 @@ const CodeInput = styled.input<{ $filled: boolean }>`
     &:-webkit-autofill {
         -webkit-box-shadow: 0 0 0 30px ${props => props.$filled ? '#F44336' : '#D9D9D9'} inset;
         -webkit-text-fill-color: ${props => props.$filled ? '#FFFFFF' : '#000000'};
+    }
+
+    /* 모바일에서 숫자 키패드 표시 */
+    &[inputmode="numeric"] {
+        -moz-appearance: textfield;
     }
 `;
 
@@ -282,7 +375,7 @@ const ErrorMessage = styled.div`
     justify-content: center;
     color: #F44336;
     text-align: center;
-    font-family: NanumSquare_ac;
+    font-family: "NanumSquare";
     font-size: 12px;
     font-weight: 700;
     line-height: 130%;
