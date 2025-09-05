@@ -5,7 +5,6 @@ import ReviewReceiptPage from "../pages/ReviewReceiptPage";
 import ResultMemberPage from "../pages/ResultMemberPage";
 import ResultManagerPage from "../pages/ResultManagerPage";
 import FinishSettleupPage from "../pages/FinishSettleupPage";
-import StartSettlementPage from "../pages/StartSettlementPage";
 import HomePage from "../pages/HomePage";
 import AlarmPage from "../pages/AlarmPage";
 import HistoryPage from "../pages/HistoryPage";
