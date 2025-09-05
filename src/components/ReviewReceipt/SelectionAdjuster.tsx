@@ -2,17 +2,17 @@ import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 
 interface SelectionAdjusterProps {
-  initialValue: number;
-  max: number; // quantity
+  assignedValue: number; // 외부에서 내가 할당한 값
+  max: number; // quantity 한도
   onChange: (value: number) => void;
 }
 
 const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
-  initialValue,
+  assignedValue,
   max,
   onChange,
 }) => {
-  const [value, setValue] = useState<number>(initialValue);
+  const [value, setValue] = useState<number>(assignedValue);
   const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -24,8 +24,8 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
   }, [editing]);
 
   useEffect(() => {
-    if (!editing) setValue(initialValue);
-  }, [initialValue, editing]);
+    if (!editing) setValue(assignedValue);
+  }, [assignedValue, editing]);
 
   const clamp = (v: number) => {
     if (Number.isNaN(v) || v < 0) return 0;
@@ -58,7 +58,7 @@ const SelectionAdjuster: React.FC<SelectionAdjusterProps> = ({
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") commit();
     if (e.key === "Escape") {
-      setValue(initialValue);
+  setValue(assignedValue);
       setEditing(false);
     }
   };
