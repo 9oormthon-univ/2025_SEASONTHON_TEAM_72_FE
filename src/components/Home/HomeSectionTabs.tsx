@@ -1,5 +1,6 @@
 import styled, { css } from "styled-components";
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import HomeData from "../../mocks/homeData.json";
 import InProgressItem from "./InProgressItem";
 import type { StatusType } from "./InProgressItem";
@@ -7,7 +8,10 @@ import { SETTLEMENT_STATUS_LABEL } from "../../constants/status";
 import rightIcon from "../../assets/icons/right_icon.svg";
 
 const HomeSectionTabs = () => {
+  // TODO: 백엔드에서 정산의 내 역할 get
+  const MYROLE = "OWNER";
   const [tab, setTab] = useState<"inprogress" | "done">("inprogress");
+  const navigate = useNavigate();
 
   const list = useMemo(() => {
     if (tab === "done") return HomeData.filter((d) => d.status === "DONE");
@@ -36,8 +40,10 @@ const HomeSectionTabs = () => {
         <Indicator $index={tab === "inprogress" ? 0 : 1} />
       </TabsBar>
       <TabPanel>
-        <ArrowRow>
-          <img src={rightIcon} alt="오른쪽 화살표" />
+        <ArrowRow onClick={() => navigate(`/history?state=${tab}`)}>
+          <ArrowButton aria-label="히스토리로 이동">
+            <img src={rightIcon} alt="히스토리" />
+          </ArrowButton>
         </ArrowRow>
         {list.map((it) => {
           const label =
@@ -120,4 +126,17 @@ const ArrowRow = styled.div`
   margin-right: 20px;
   padding-bottom: 10px;
   width: 100%;
+`;
+
+const ArrowButton = styled.button`
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  > img {
+    width: 20px;
+    height: 20px;
+  }
 `;

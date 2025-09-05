@@ -3,12 +3,13 @@ import { IoCalendarClearOutline } from "react-icons/io5";
 import clockLoaderIcon from "../../assets/icons/clock_loader_icon.svg";
 import creditCardIcon from "../../assets/icons/credit_card_icon.svg";
 import groupsIcon from "../../assets/icons/groups_icon.svg";
+import exitIcon from "../../assets/icons/exit_icon.svg";
 
 export type StatusType = "정산진행중" | "입금 필요" | "관리 필요" | "종료";
 
 interface InProgressItemProps {
   title: string;
-  dueDate: string; // already formatted string passed from parent
+  dueDate: string;
   status: StatusType;
 }
 
@@ -33,7 +34,9 @@ const InProgressItem: React.FC<InProgressItemProps> = ({
                 ? clockLoaderIcon
                 : status === "입금 필요"
                 ? creditCardIcon
-                : groupsIcon
+                : status === "관리 필요"
+                ? groupsIcon
+                : exitIcon
             }
             alt={status}
           />
