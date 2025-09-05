@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ReviewReceiptPage from "../pages/ReviewReceiptPage";
 import FinishSettleupPage from "../pages/FinishSettleupPage";
 import StartSettlementPage from "../pages/StartSettlementPage";
+import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
 import Layout from "../components/Layout/Layout";
 
 const Router = () => {
@@ -12,6 +13,7 @@ const Router = () => {
           <Route path="/startsettlement" element={<StartSettlementPage />} />
           <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />
           <Route path="/finishsettleup" element={<FinishSettleupPage />} />
+          <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
