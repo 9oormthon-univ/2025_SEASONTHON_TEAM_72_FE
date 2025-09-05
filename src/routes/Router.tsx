@@ -3,6 +3,10 @@ import InvitationCodePage from "../pages/InvitationCodePage";
 import StartSettlementPage from "../pages/StartSettlementPage";
 import ReviewReceiptPage from "../pages/ReviewReceiptPage";
 import FinishSettleupPage from "../pages/FinishSettleupPage";
+import StartSettlementPage from "../pages/StartSettlementPage";
+import HomePage from "../pages/HomePage";
+import AlarmPage from "../pages/AlarmPage";
+import HistoryPage from "../pages/HistoryPage";
 import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
 import Layout from "../components/Layout/Layout";
 
@@ -11,6 +15,9 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/alarm" element={<AlarmPage />} />
+          <Route path="/history" element={<HistoryPage />} />
           <Route path="/invitationcode" element={<InvitationCodePage />} />
           <Route path="/startsettlement" element={<StartSettlementPage />} />
           <Route path="/review" element={<ReviewReceiptPage />} />
