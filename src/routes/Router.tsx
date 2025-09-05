@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import InvitationCodePage from "../pages/InvitationCodePage";
+import StartSettlementPage from "../pages/StartSettlementPage";
 import ReviewReceiptPage from "../pages/ReviewReceiptPage";
 import FinishSettleupPage from "../pages/FinishSettleupPage";
 import StartSettlementPage from "../pages/StartSettlementPage";
@@ -16,9 +18,10 @@ const Router = () => {
           <Route path="/home" element={<HomePage />} />
           <Route path="/alarm" element={<AlarmPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/invitationcode" element={<InvitationCodePage />} />
           <Route path="/startsettlement" element={<StartSettlementPage />} />
-          <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />
-          <Route path="/finishsettleup" element={<FinishSettleupPage />} />
+          <Route path="/review" element={<ReviewReceiptPage />} />
+          <Route path="/finish" element={<FinishSettleupPage />} />
           <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
         </Route>
       </Routes>
