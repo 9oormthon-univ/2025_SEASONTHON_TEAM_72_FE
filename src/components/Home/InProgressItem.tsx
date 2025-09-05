@@ -63,7 +63,7 @@ const Card = styled.div<{ $done?: boolean }>`
 
 const TopRow = styled.div`
   font-size: 12px;
-  font-weight: 800; /* extrabold */
+  font-weight: 800; 
   color: #000;
   line-height: 1.3;
   word-break: break-word;

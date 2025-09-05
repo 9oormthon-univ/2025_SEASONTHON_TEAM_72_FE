@@ -7,7 +7,6 @@ import ResultManagerPage from "../pages/ResultManagerPage";
 import FinishSettleupPage from "../pages/FinishSettleupPage";
 import HomePage from "../pages/HomePage";
 import AlarmPage from "../pages/AlarmPage";
-import HistoryPage from "../pages/HistoryPage";
 import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
 import Layout from "../components/Layout/Layout";
 
@@ -18,7 +17,6 @@ const Router = () => {
         <Route element={<Layout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/alarm" element={<AlarmPage />} />
-          <Route path="/history" element={<HistoryPage />} />
           <Route path="/invitationcode" element={<InvitationCodePage />} />
           <Route path="/startsettlement" element={<StartSettlementPage />} />
           <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />

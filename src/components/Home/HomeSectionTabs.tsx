@@ -1,25 +1,27 @@
 import styled, { css } from "styled-components";
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import HomeData from "../../mocks/homeData.json";
 import InProgressItem from "./InProgressItem";
 import type { StatusType } from "./InProgressItem";
 import { SETTLEMENT_STATUS_LABEL } from "../../constants/status";
-import rightIcon from "../../assets/icons/right_icon.svg";
 
 const HomeSectionTabs = () => {
   // TODO: 백엔드에서 정산의 내 역할 get
-  const MYROLE = "OWNER";
   const [tab, setTab] = useState<"inprogress" | "done">("inprogress");
-  const navigate = useNavigate();
 
   const list = useMemo(() => {
     if (tab === "done") return HomeData.filter((d) => d.status === "DONE");
     return HomeData.filter((d) => d.status !== "DONE");
   }, [tab]);
 
-  const formatDate = (ts: number) => {
-    const d = new Date(ts);
+  const formatDate = (value: string | number | Date) => {
+    let d =
+      typeof value === "string" || typeof value === "number"
+        ? new Date(value)
+        : new Date(value.getTime());
+    if (isNaN(d.getTime()) && typeof value === "string") {
+      d = new Date(value.replace(" ", "T"));
+    }
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const dd = String(d.getDate()).padStart(2, "0");
     return `${mm}.${dd}`;
@@ -40,11 +42,6 @@ const HomeSectionTabs = () => {
         <Indicator $index={tab === "inprogress" ? 0 : 1} />
       </TabsBar>
       <TabPanel>
-        <ArrowRow onClick={() => navigate(`/history?state=${tab}`)}>
-          <ArrowButton aria-label="히스토리로 이동">
-            <img src={rightIcon} alt="히스토리" />
-          </ArrowButton>
-        </ArrowRow>
         {list.map((it) => {
           const label =
             SETTLEMENT_STATUS_LABEL[
@@ -53,8 +50,8 @@ const HomeSectionTabs = () => {
           return (
             <InProgressItem
               key={it.id}
-              title={it.name}
-              dueDate={formatDate(it.date as unknown as number)}
+              title={it.title}
+              dueDate={formatDate(it.created_at as string)}
               status={label as StatusType}
             />
           );
@@ -70,12 +67,18 @@ export default HomeSectionTabs;
 const TabsWrapper = styled.div`
   width: 100%;
   margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* allow to expand within parent */
+  min-height: 0; /* enable child overflow scroll */
+  border: 1px solid red;
 `;
 
 const TabsBar = styled.div`
   position: relative;
   display: flex;
   width: 115px;
+  flex: 0 0 auto; /* prevent shrinking so panel below can scroll */
 `;
 
 const TabButton = styled.button<{ $active: boolean }>`
@@ -111,7 +114,13 @@ const Indicator = styled.span<{ $index: number }>`
 `;
 
 const TabPanel = styled.div`
-  padding-top: 8px;
+  padding-top: 12px;
+  flex: 1; /* take remaining height under tabs bar */
+  min-height: 0; /* required so overflow works in flex child */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* momentum scrolling on iOS */
+  overscroll-behavior: contain;
+  padding-bottom: 16px; /* breathing room at bottom */
 `;
 
 const EmptyText = styled.div`
@@ -119,24 +128,4 @@ const EmptyText = styled.div`
   font-size: 13px;
   color: #888;
   text-align: center;
-`;
-const ArrowRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 20px;
-  padding-bottom: 10px;
-  width: 100%;
-`;
-
-const ArrowButton = styled.button`
-  background: transparent;
-  border: none;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  > img {
-    width: 20px;
-    height: 20px;
-  }
 `;

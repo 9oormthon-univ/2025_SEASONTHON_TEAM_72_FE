@@ -1,44 +1,121 @@
 [
   {
     "id": 101,
-    "name": "코스트코",
-    "date": 1755820800000,
-    "status": "IN_PROGRESS"
+    "title": "코스트코",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "NEEDS_ATTENTION",
+    "role": "OWNER"
   },
   {
     "id": 102,
-    "name": "휴지 공구!",
-    "date": 1756080000000,
-    "status": "AWAITING_DEPOSIT"
+    "title": "이마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
   },
   {
     "id": 103,
-    "name": "감자 한 박스",
-    "date": 1756339200000,
-    "status": "NEEDS_ATTENTION"
+    "title": "홈플러스",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
   },
   {
     "id": 104,
-    "name": "수박 소분",
-    "date": 1756684800000,
-    "status": "IN_PROGRESS"
+    "title": "하나로마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
   },
   {
     "id": 105,
-    "name": "이마트정산해요",
-    "date": 1756857600000,
-    "status": "AWAITING_DEPOSIT"
+    "title": "노브랜드",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
   },
   {
     "id": 106,
-    "name": "이마트정산해요",
-    "date": 1756857600000,
-    "status": "DONE"
+    "title": "마켓컬리",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
   },
   {
     "id": 107,
-    "name": "이마트정산해요",
-    "date": 1756857600000,
-    "status": "DONE"
+    "title": "쿠팡마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "AWAITING_DEPOSIT",
+    "role": "OWNER"
+  },
+  {
+    "id": 108,
+    "title": "GS더프레시",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
+  },
+  {
+    "id": 109,
+    "title": "롯데마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "DONE",
+    "role": "OWNER"
   }
 ]
