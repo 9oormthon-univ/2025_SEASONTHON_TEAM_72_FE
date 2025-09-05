@@ -1,93 +1,100 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import hourglassIcon from '../assets/icons/hourglass-icon.svg';
 import OCRLoading from '../components/OCRLoading/OCRLoading';
 import type { OCRResult, ReceiptData, OCRApiInterface } from '../apis/ocrApi';
 import { ocrApi } from '../apis/ocrApi';
 
-type PageState = 'upload' | 'loading' | 'result';
-
 const OCRLoadingPage: React.FC = () => {
-  const [pageState, setPageState] = useState<PageState>('upload');
+  const navigate = useNavigate();
+  const location = useLocation();
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
 
-  const handleUpload = (file: File) => {
-    setImageFile(file);
-    setPageState('loading');
+  const createDefaultData = (): ReceiptData => {
+    return {
+      storeName: '상점명 없음',
+      date: new Date().toLocaleDateString('ko-KR'),
+      items: [
+        {
+          name: '상품 정보 없음',
+          count: 1,
+          unitPrice: 0,
+          totalPrice: 0,
+        }
+      ],
+      totalAmount: 0,
+    };
   };
+
+  useEffect(() => {
+    // /startsettlement에서 전달받은 이미지 파일 확인
+    const state = location.state as { imageFile?: File };
+    if (state?.imageFile) {
+      setImageFile(state.imageFile);
+    } else {
+      // 이미지 파일이 없으면 startsettlement 페이지로 리다이렉트
+      navigate('/startsettlement');
+    }
+  }, [location, navigate]);
 
   const handleSuccess = (result: OCRResult) => {
     try {
       const parsedData = (ocrApi as OCRApiInterface).parseReceiptData(result);
-      setReceiptData(parsedData);
-      setPageState('result');
+      
+      // receiptconfirm 페이지로 데이터와 함께 이동
+      navigate('/receiptconfirm', {
+        state: {
+          receiptData: parsedData,
+          originalImage: imageFile
+        }
+      });
     } catch (error) {
-      // 파싱 실패해도 로그만 남기고 기본 데이터로 결과 페이지 표시
       console.error('영수증 데이터 파싱 실패, 기본 데이터 사용:', error);
       
-      const defaultData: ReceiptData = {
-        storeName: '상점명 없음',
-        date: new Date().toLocaleDateString('ko-KR'),
-        items: [
-          {
-            name: '상품 정보 없음',
-            count: 1,
-            unitPrice: 0,
-            totalPrice: 0,
-          }
-        ],
-        totalAmount: 0,
-      };
+      const defaultData = createDefaultData();
       
-      setReceiptData(defaultData);
-      setPageState('result');
+      // 기본 데이터로 receiptconfirm 페이지로 이동
+      navigate('/receiptconfirm', {
+        state: {
+          receiptData: defaultData,
+          originalImage: imageFile
+        }
+      });
     }
   };
 
-  const handleRetry = () => {
-    setPageState('upload');
-    setImageFile(null);
-    setReceiptData(null);
+  const handleError = (error: string) => {
+    console.error('OCR 처리 실패:', error);
+    
+    // 에러 발생 시에도 기본 데이터로 receiptconfirm 페이지로 이동
+    const defaultData = createDefaultData();
+    
+    navigate('/receiptconfirm', {
+      state: {
+        receiptData: defaultData,
+        originalImage: imageFile,
+        ocrError: true,
+        errorMessage: 'OCR 처리에 실패하여 기본 데이터를 사용합니다.'
+      }
+    });
   };
 
-  const handleConfirm = () => {
-    // 영수증 데이터를 다음 단계로 전달
-    console.log('확인된 영수증 데이터:', receiptData);
-    // TODO: 다음 페이지로 이동하거나 데이터 저장
-  };
+  // 이미지 파일이 없으면 아무것도 렌더링하지 않음
+  if (!imageFile) {
+    return null;
+  }
 
-  const renderContent = () => {
-    switch (pageState) {
-      case 'upload':
-        return <ReceiptUpload onUpload={handleUpload} />;
-      
-      case 'loading':
-        return imageFile ? (
-          <OCRLoadingPageLayout>
-            <LoadingImage src={hourglassIcon} alt="로딩 중" />
-            <OCRLoading
-              imageFile={imageFile}
-              onSuccess={handleSuccess}
-            />
-          </OCRLoadingPageLayout>
-        ) : null;
-      
-      case 'result':
-        return receiptData ? (
-          <ReceiptResult
-            receiptData={receiptData}
-            onRetry={handleRetry}
-            onConfirm={handleConfirm}
-          />
-        ) : null;
-      
-      default:
-        return <ReceiptUpload onUpload={handleUpload} />;
-    }
-  };
-
-  return renderContent();
+  return (
+    <OCRLoadingPageLayout>
+      <LoadingImage src={hourglassIcon} alt="로딩 중" />
+      <OCRLoading
+        imageFile={imageFile}
+        onSuccess={handleSuccess}
+        onError={handleError}
+      />
+    </OCRLoadingPageLayout>
+  );
 };
 
 export default OCRLoadingPage;
