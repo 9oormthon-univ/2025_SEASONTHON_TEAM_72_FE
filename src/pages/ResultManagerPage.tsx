@@ -1,8 +1,25 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
 import { dummyData2, dummyDataEntire, dummyDataMe } from "./ReviewReceiptPage";
+import { useState, useEffect } from "react";
+import FloatingAlert from "../components/Result/FloatingAlert";
 
 const ResultManagerPage = () => {
+  const myName = "이채영"; // TODO replace with global user state
+  const [showAlert, setShowAlert] = useState(false);
+  const [bonus, setBonus] = useState(0);
+
+  const trigger = () => {
+    setBonus(Math.floor(Math.random() * 900 + 100));
+    setShowAlert(true);
+  };
+
+  useEffect(() => {
+    if (!showAlert) return;
+    const t = setTimeout(() => setShowAlert(false), 3000);
+    return () => clearTimeout(t);
+  }, [showAlert]);
+
   return (
     <SettleupResultPageLayout>
       <TitleWrapper>
@@ -14,7 +31,13 @@ const ResultManagerPage = () => {
         {dummyData2.map((it) => (
           <ReceiptDropdown key={it.user} data={it} />
         ))}
+        <button onClick={trigger}>show floating alert</button>
       </ReceiptDiv>
+      <FloatingAlert
+        show={showAlert}
+        message={`🍀${myName} 님 행운의 +${bonus}원 당첨!🍀`}
+        onClose={() => setShowAlert(false)}
+      />
     </SettleupResultPageLayout>
   );
 };

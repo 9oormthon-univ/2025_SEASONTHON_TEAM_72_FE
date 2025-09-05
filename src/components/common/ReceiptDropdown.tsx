@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useLocation } from "react-router-dom";
 import arrowIcon from "../../assets/icons/keyboard_arrow_down.svg";
+import { useReceiptOpenStore } from "../../stores/useReceiptOpenStore";
 
 interface ReceiptItem {
   name: string;
@@ -28,7 +29,8 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
 }) => {
   // TODO: 내 정보 전역 상태로 추가
   const myName = "이채영";
-  const [open, setOpen] = useState(false);
+  const { openUser, setOpenUser } = useReceiptOpenStore();
+  const open = openUser === data.user;
   const location = useLocation();
   const isManagerPage = location.pathname === "/result/manager";
   const isMemberPage = location.pathname === "/result/member";
@@ -91,7 +93,6 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
       ];
     }
   } else if (!isTotal && isMemberPage && mine) {
-    // Member 내 영수증: 토글 하나
     actionButtons = [
       {
         label: isPaid ? "입금 취소하기" : "입금 완료하기",
@@ -103,9 +104,12 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
 
   return (
     <ReceiptDropdownLayout>
-      <DropdownCard onClick={() => setOpen((prev) => !prev)} isOpen={open}>
+      <DropdownCard
+        onClick={() => setOpenUser(open ? null : data.user)}
+        isOpen={open}
+      >
         <CardLeft>
-          <span>{mine ? "내 영수증" : data.user}</span>
+          <span>{mine ? "내 영수증 📌" : data.user}</span>
           {showStatusDot && <StatusDot aria-hidden $color={statusDotColor} />}
         </CardLeft>
         <CardRight>
