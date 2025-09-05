@@ -5,6 +5,7 @@ import StartSettlementPage from "../pages/StartSettlementPage";
 import HomePage from "../pages/HomePage";
 import AlarmPage from "../pages/AlarmPage";
 import HistoryPage from "../pages/HistoryPage";
+import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
 import Layout from "../components/Layout/Layout";
 
 const Router = () => {
@@ -18,6 +19,7 @@ const Router = () => {
           <Route path="/startsettlement" element={<StartSettlementPage />} />
           <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />
           <Route path="/finishsettleup" element={<FinishSettleupPage />} />
+          <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
