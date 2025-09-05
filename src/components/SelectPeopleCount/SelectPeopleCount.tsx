@@ -1,11 +1,19 @@
 import styled from "styled-components";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SelectCountImg from "../../assets/images/select_count_img.svg";
 import MinusButtonIcon from "../../assets/icons/minus_button_icon.svg";
 import PlusButtonIcon from "../../assets/icons/plus_button_icon.svg";
-// import BottomNav from "../BottomNav/BottomNav";
+import BottomNav from "../../components/common/BottomNav";
 
 const SelectPeopleCount = () => {
+  const navigate = useNavigate();
+  
+    const handleNextClick = () => {
+      // 다음 페이지로 이동하는 로직
+      console.log("다음 클릭");
+    };
+
   const [peopleCount, setPeopleCount] = useState(2);
 
   const handleIncrement = () => {
@@ -22,7 +30,6 @@ const handleDecrement = () => {
   return (
     <SelectPeopleCountLayout>
         <Title>정산 인원을 선택해 주세요.</Title>
-        
         <CounterContainer>
         <PizzaContainer>
           <PizzaWrapper>
@@ -67,7 +74,11 @@ const handleDecrement = () => {
           </CountDisplay>
         </CounterContainer>
 
-      //BottomNav
+      <BottomNav 
+        description="나를 포함해서 최소 2명, 최대 8명까지 참여 가능해요."
+        primaryLabel="다음"
+        onPrimaryClick={handleNextClick}
+      />
 
     </SelectPeopleCountLayout>
   );
@@ -208,6 +219,7 @@ const PlusButton = styled.button`
 
 const CountDisplay = styled.div`
   text-align: center;
+  margin-bottom: 100px;
 `;
 
 const CountNumber = styled.span`
