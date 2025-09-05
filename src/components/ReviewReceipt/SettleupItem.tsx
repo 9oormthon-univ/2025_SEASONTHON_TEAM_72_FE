@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { FaCheck } from "react-icons/fa";
 import SettleupDrawer from "./SettleupDrawer";
 import type { ItemData } from "../../mocks/settleupData";
 
@@ -17,6 +18,7 @@ const SettleupItem: React.FC<SettleupItemProps> = ({
 }) => {
   const MYNAME = "이채영";
   const [open, setOpen] = useState(false);
+  const [saved, setSaved] = useState(false);
   const myAmount = selections
     .filter((s) => s.user === MYNAME)
     .reduce<number>((a, c) => a + c.amount, 0);
@@ -30,7 +32,9 @@ const SettleupItem: React.FC<SettleupItemProps> = ({
             <span>{price.toLocaleString()}원</span>
           </SubLine>
         </LeftTexts>
-        <Circle $status={status}>{myAmount}개</Circle>
+        <Circle $status={status}>
+          {myAmount}개
+        </Circle>
       </ItemWrapper>
       <SettleupDrawer
         open={open}
@@ -39,7 +43,11 @@ const SettleupItem: React.FC<SettleupItemProps> = ({
         quantity={quantity}
         price={price}
         selections={selections}
-        onSave={(val: number) => onUpdateMyAmount(val)}
+        onSave={(val: number) => {
+          onUpdateMyAmount(val);
+          setSaved(true);
+          setTimeout(() => setSaved(false), 2500);
+        }}
       />
     </>
   );
@@ -99,6 +107,7 @@ const Circle = styled.div<{ $status: string }>`
   font-weight: 600;
   box-sizing: border-box;
   padding: 0 4px;
+  transition: background 0.25s, color 0.25s;
   ${({ $status }) => {
     switch ($status) {
       case "완료":

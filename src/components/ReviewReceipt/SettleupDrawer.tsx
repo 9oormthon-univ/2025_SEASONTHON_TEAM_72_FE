@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
 import SelectionAdjuster from "./SelectionAdjuster";
 import { BsXLg } from "react-icons/bs";
+import { FaRegCheckCircle } from "react-icons/fa";
+import userIcon from "../../assets/icons/user_icon.svg";
 
 export interface UserSelection {
   user: string;
@@ -35,17 +37,30 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   const [tempValue, setTempValue] = useState<number>(
     () => mySelection?.amount ?? 0
   );
+  const [savedMark, setSavedMark] = useState(false);
+  const [attemptedSave, setAttemptedSave] = useState(false);
   const myAmount = selections
     .filter((s) => s.user === MYNAME)
     .reduce<number>((a, c) => a + c.amount, 0);
+  const othersSum = selections
+    .filter((s) => s.user !== MYNAME)
+    .reduce<number>((a, c) => a + c.amount, 0);
+  const totalIfSaved = othersSum + tempValue;
+  const exceeds = totalIfSaved > quantity;
 
   const handleTempChange = (v: number) => {
     setTempValue(v);
   };
 
   const commitSave = () => {
+    setAttemptedSave(true);
+    if (exceeds) return; // 초과면 경고 표시 후 저장/닫기 중단
     if (onSave) onSave(tempValue);
-    onClose();
+    setSavedMark(true);
+    setTimeout(() => {
+      setSavedMark(false);
+      onClose();
+    }, 800);
   };
 
   const commitCancel = () => {
@@ -56,6 +71,8 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
     if (open) {
       const latest = selections.find((s) => s.user === MYNAME)?.amount ?? 0;
       setTempValue(latest);
+      setAttemptedSave(false);
+      setSavedMark(false);
     }
   }, [open, selections]);
 
@@ -99,13 +116,26 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
               <QuantityTag>{quantity}개</QuantityTag>
             </div>
             <HeaderActions>
-              <SaveButton type="button" onClick={commitSave}>
-                저장
-              </SaveButton>
+              {savedMark ? (
+                <SavedIcon aria-label="저장됨" />
+              ) : (
+                <SaveButton
+                  type="button"
+                  onClick={commitSave}
+                  disabled={savedMark}
+                >
+                  저장
+                </SaveButton>
+              )}
               <HeaderButton type="button" onClick={commitCancel} />
             </HeaderActions>
           </HeaderRow>
           <PriceP>{price.toLocaleString()}원</PriceP>
+          {attemptedSave && exceeds && (
+            <ExceedWarn role="alert">
+              ❗수량을 확인해 주세요. (입력 초과)
+            </ExceedWarn>
+          )}
           <List>
             {selections
               .filter((sel) => sel.user !== MYNAME)
@@ -115,6 +145,7 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
                   : sel.amount.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
                 return (
                   <ListItem key={sel.user}>
+                    <img alt="유저아이콘" src={userIcon} />
                     <UserName>{sel.user}</UserName>
                     <AmountTag>{formatted}개</AmountTag>
                   </ListItem>
@@ -164,7 +195,11 @@ const DrawerContainer = styled.div<{ open: boolean }>`
   flex-direction: column;
   padding: 0 20px 20px;
   box-sizing: border-box;
-  height: 260px;
+  /* height dynamic to avoid clipping when warning bar appears */
+  min-height: 260px;
+  max-height: 340px;
+  height: auto;
+  overflow: hidden;
 `;
 
 const Inner = styled.div`
@@ -172,6 +207,7 @@ const Inner = styled.div`
   flex-direction: column;
   flex: 1;
   padding-top: 14px;
+  max-height: 100%;
 `;
 
 const HeaderRow = styled.div`
@@ -205,6 +241,16 @@ const PriceP = styled.p`
   line-height: 130%;
 `;
 
+const ExceedWarn = styled.div`
+  width: 90%;
+  color: #f44336;
+  font-size: 11px;
+  font-weight: 800;
+  background-color: #ffffd0;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+`;
+
 const List = styled.ul`
   list-style: none;
   margin: 0;
@@ -232,7 +278,7 @@ const AmountTag = styled.p`
   background-color: #fdd9d7;
   color: #f44336;
   width: fit-content;
-  padding: 2px 4px;
+  padding: 2px 8px;
   border-radius: 20px;
   font-weight: 600;
 `;
@@ -272,4 +318,23 @@ const TransparentOverlay = styled.div`
   inset: 0;
   background: transparent;
   z-index: 1000;
+`;
+
+const SavedIcon = styled(FaRegCheckCircle)`
+  font-size: 20px;
+  color: #0f9d58;
+  animation: pop 0.3s ease;
+  @keyframes pop {
+    0% {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+    70% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
 `;
