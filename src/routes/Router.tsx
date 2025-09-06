@@ -9,6 +9,7 @@ import HomePage from "../pages/HomePage";
 import AlarmPage from "../pages/AlarmPage";
 import HistoryPage from "../pages/HistoryPage";
 import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
+import OCRLoadingPage from "../pages/OCRLoadingPage";
 import LoginPage from "../pages/LoginPage";
 import SelectPeopleCountPage from "../pages/SelectPeopleCountPage";
 import Layout from "../components/Layout/Layout";
@@ -26,10 +27,10 @@ const Router = () => {
           <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />
           <Route path="/result/manager" element={<ResultManagerPage />} />
           <Route path="/result/member" element={<ResultMemberPage />} />
-          <Route path="/finishsettleup" element={<FinishSettleupPage />} />
           <Route path="/review" element={<ReviewReceiptPage />} />
           <Route path="/finish" element={<FinishSettleupPage />} />
           <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
+          <Route path="/ocrloading" element={<OCRLoadingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/selectpeoplecount" element={<SelectPeopleCountPage />} />
         </Route>
