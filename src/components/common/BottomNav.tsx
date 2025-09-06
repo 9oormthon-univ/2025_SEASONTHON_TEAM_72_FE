@@ -30,12 +30,12 @@ const BottomNav: React.FC<BottomNavProps> = ({
       <Spacer style={{ height: spacerHeight }} />
       <BarWrapper ref={barRef}>
         {description && <DescriptionText>{description}</DescriptionText>}
-        <Buttons>
+        <ButtonsContainer>
           <PrimaryButton onClick={onPrimaryClick}>{primaryLabel}</PrimaryButton>
           {secondaryLabel && (
             <SecondaryButton onClick={onSecondaryClick}>{secondaryLabel}</SecondaryButton>
           )}
-        </Buttons>
+        </ButtonsContainer>
       </BarWrapper>
     </>
   );
@@ -43,18 +43,20 @@ const BottomNav: React.FC<BottomNavProps> = ({
 
 export default BottomNav;
 
-const Spacer = styled.div``;
+const Spacer = styled.div`
+  /* 동적 높이를 위한 스페이서 */
+`;
 
 const BarWrapper = styled.div`
   position: fixed;
-  align-items: center;
-  left: 50%;
   bottom: 0;
+  left: 50%;
   transform: translateX(-50%);
-  width: 390px;
+  width: calc(100% - 40px);
+  max-width: 350px;
   background: #ffffff;
   box-shadow: 2px -2px 15px rgba(0, 0, 0, 0.1);
-  padding: 16px 20px 20px 20px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -64,54 +66,63 @@ const BarWrapper = styled.div`
 const DescriptionText = styled.span`
   color: #6b6b6b;
   font-size: 10px;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-weight: 700;
   line-height: 13px;
+  text-align: center;
   word-wrap: break-word;
+  margin-bottom: 4px;
 `;
 
-const Buttons = styled.div`
+const ButtonsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 `;
 
 const PrimaryButton = styled.button`
-  width: 350px;
+  width: 100%;
   height: 40px;
   background-color: #f44336;
   color: #fff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-weight: 800;
   font-size: 16px;
   line-height: 130%;
-  transition: background-color 0.2s;
-
+  transition: background-color 0.2s ease;
   &:hover {
     background-color: #c0392b;
+  }
+  &:active {
+    background-color: #a93226;
   }
 `;
 
 const SecondaryButton = styled.button`
-  width: 350px;
+  width: 100%;
   height: 40px;
   background-color: #ffffff;
   color: #f44336;
-  border: 1px #f44336 solid;
+  border: 1px solid #f44336;
   border-radius: 10px;
   cursor: pointer;
-  font-family: NanumSquare_ac;
+  font-family: "NanumSquare", sans-serif;
   font-weight: 800;
   font-size: 16px;
   line-height: 130%;
-  transition: opacity 0.2s;
-
+  transition: all 0.2s ease;
   &:hover {
-    opacity: 0.8;
+    background-color: #f5f5f5;
+    color: #666666;
+    border-color: #cccccc;
+  }
+  &:active {
+    background-color: #e0e0e0;
+    color: #333333;
+    border-color: #999999;
   }
 `;
-
-
