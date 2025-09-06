@@ -17,19 +17,17 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/receiptedit" element={<ReceiptEditPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/alarm" element={<AlarmPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/invitationcode" element={<InvitationCodePage />} />
           <Route path="/startsettlement" element={<StartSettlementPage />} />
-          <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />
           <Route path="/result/manager" element={<ResultManagerPage />} />
           <Route path="/result/member" element={<ResultMemberPage />} />
-          <Route path="/finishsettleup" element={<FinishSettleupPage />} />
           <Route path="/review" element={<ReviewReceiptPage />} />
           <Route path="/finish" element={<FinishSettleupPage />} />
           <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
+          <Route path="/receiptedit" element={<ReceiptEditPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

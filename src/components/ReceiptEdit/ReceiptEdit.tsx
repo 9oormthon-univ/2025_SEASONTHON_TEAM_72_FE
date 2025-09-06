@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import TopNav from "../common/TopNav";
 import BottomNav from "../common/BottomNav";
-import { ItemEditSheet } from "./ItemEdit";
 
 const ReceiptEditContent = () => {
   const handleBackClick = () => {
@@ -17,26 +16,9 @@ const ReceiptEditContent = () => {
       />
       <ReceiptContainer>
         {/* 연동 예정  */}
-        <SettlementReceipt 
-          title="피자 정산"
-          date="2024-01-15"
-          items={[
-            { name: "페퍼로니 피자", quantity: 2, price: 15000 },
-            { name: "콜라", quantity: 4, price: 2000 },
-            { name: "치즈 스틱", quantity: 1, price: 4000 },
-            { name: "디핑 소스", quantity: 3, price: 1500 },
-            { name: "샐러드", quantity: 1, price: 6000 },
-            { name: "핫소스", quantity: 5, price: 500 },
-            { name: "핫소스", quantity: 5, price: 500 },
-            { name: "핫소스", quantity: 5, price: 500 },
-            { name: "핫소스", quantity: 5, price: 500 },
-            { name: "핫소스", quantity: 5, price: 500 },
-            { name: "핫소스", quantity: 5, price: 500 },
-          ]}
-        />
+        
       </ReceiptContainer>
       <BottomContentContainer>
-        <ItemEditSheet />
       </BottomContentContainer>
       <BottomNav 
                 description="수정된 영수증을 확인해 주세요."
