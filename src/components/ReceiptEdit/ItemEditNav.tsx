@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
 import styled from "styled-components";
 
 type ItemEditNavProps = {
@@ -24,6 +24,8 @@ const ItemEditNav: React.FC<ItemEditNavProps> = ({
 }) => {
   const barRef = useRef<HTMLDivElement>(null);
   const [spacerHeight, setSpacerHeight] = useState<number>(0);
+  const [keyboardHeight, setKeyboardHeight] = useState<number>(0);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState<boolean>(false);
   
   // 편집 상태 관리
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -35,11 +37,43 @@ const ItemEditNav: React.FC<ItemEditNavProps> = ({
   const [tempCount, setTempCount] = useState(count);
   const [tempPrice, setTempPrice] = useState(price);
 
+  // 키보드 감지를 위한 viewport 높이 추적
+  useEffect(() => {
+    const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+    
+    const handleViewportChange = () => {
+      const currentHeight = window.visualViewport?.height || window.innerHeight;
+      const heightDiff = initialViewportHeight - currentHeight;
+      
+      if (heightDiff > 150) { // 키보드가 올라온 것으로 판단 (150px 이상 차이)
+        setKeyboardHeight(heightDiff);
+        setIsKeyboardOpen(true);
+      } else {
+        setKeyboardHeight(0);
+        setIsKeyboardOpen(false);
+      }
+    };
+
+    // Visual Viewport API 지원 확인
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+      return () => {
+        window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      };
+    } else {
+      // 대체 방법: window resize 이벤트 사용
+      window.addEventListener('resize', handleViewportChange);
+      return () => {
+        window.removeEventListener('resize', handleViewportChange);
+      };
+    }
+  }, []);
+
   useLayoutEffect(() => {
     if (barRef.current) {
       setSpacerHeight(barRef.current.offsetHeight);
     }
-  }, []);
+  }, [isKeyboardOpen, keyboardHeight]);
 
   // 제목 편집 관련 함수들
   const handleTitleClick = () => {
@@ -122,7 +156,11 @@ const ItemEditNav: React.FC<ItemEditNavProps> = ({
   return (
     <>
       <Spacer style={{ height: spacerHeight }} />
-      <BarWrapper ref={barRef}>
+      <BarWrapper 
+        ref={barRef} 
+        $isKeyboardOpen={isKeyboardOpen}
+        $keyboardHeight={keyboardHeight}
+      >
         <CloseButton onClick={onClose}>
           <img src="src\assets\icons\cancel_icon.svg" alt="Close" />
         </CloseButton>
@@ -206,9 +244,8 @@ const Spacer = styled.div`
   /* 동적 높이를 위한 스페이서 */
 `;
 
-const BarWrapper = styled.div`
+const BarWrapper = styled.div<{ $isKeyboardOpen: boolean; $keyboardHeight: number }>`
   position: fixed;
-  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 40px);
@@ -220,6 +257,29 @@ const BarWrapper = styled.div`
   flex-direction: column;
   gap: 12px;
   z-index: 10;
+  
+  /* 키보드 상태에 따른 위치 조정 */
+  bottom: ${props => props.$isKeyboardOpen ? `${Math.max(props.$keyboardHeight - 100, 0)}px` : '0'};
+  
+  /* 부드러운 애니메이션 */
+  transition: bottom 0.3s ease-out;
+  
+  /* iOS Safari에서 키보드 올라올 때 추가 조정 */
+  @supports (-webkit-appearance: none) {
+    /* iOS Safari 전용 스타일 */
+    ${props => props.$isKeyboardOpen && `
+      position: absolute;
+      bottom: auto;
+      top: calc(100vh - ${props.$keyboardHeight + 200}px);
+    `}
+  }
+  
+  /* 작은 화면에서 키보드가 올라올 때 추가 조정 */
+  @media (max-height: 667px) {
+    ${props => props.$isKeyboardOpen && `
+      bottom: ${Math.max(props.$keyboardHeight - 120, 10)}px;
+    `}
+  }
 `;
 
 const CloseButton = styled.button`

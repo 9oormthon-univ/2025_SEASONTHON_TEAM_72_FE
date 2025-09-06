@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import TopContent from "../ReceiptEdit/TopContent";
 import ItemAddButton from "./ItemAddButton";
@@ -6,10 +6,42 @@ import ItemButton from "./ItemButton";
 import ItemEditNav from "../ReceiptEdit/ItemEditNav";
 import BottomNav from "../common/BottomNav";
 
+interface ReceiptItem {
+  id: number;
+  title: string;
+  count: string;
+  price: string;
+}
+
 const ReceiptEdit = () => {
   const [items, setItems] = useState<ReceiptItem[]>([]);
   const [isEditingItem, setIsEditingItem] = useState(false);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  // 키보드 감지
+  useEffect(() => {
+    const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+    
+    const handleViewportChange = () => {
+      const currentHeight = window.visualViewport?.height || window.innerHeight;
+      const heightDiff = initialViewportHeight - currentHeight;
+      
+      setIsKeyboardOpen(heightDiff > 150); // 150px 이상 차이나면 키보드가 올라온 것으로 판단
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+      return () => {
+        window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      };
+    } else {
+      window.addEventListener('resize', handleViewportChange);
+      return () => {
+        window.removeEventListener('resize', handleViewportChange);
+      };
+    }
+  }, []);
 
   const handleAddItem = () => {
     const newItem: ReceiptItem = {
@@ -32,7 +64,6 @@ const ReceiptEdit = () => {
   };
 
   const handleSaveItem = () => {
-    // 저장 로직 추가 가능
     console.log('아이템 저장됨');
     setIsEditingItem(false);
     setEditingItemId(null);
@@ -79,7 +110,7 @@ const ReceiptEdit = () => {
     : null;
 
    return (
-    <ReceiptLayout>
+    <ReceiptLayout $isKeyboardOpen={isKeyboardOpen}>
       <TopContentWrapper>
         <TopContent 
           title="새로운 정산"
@@ -107,7 +138,7 @@ const ReceiptEdit = () => {
         </ScrollableContent>
       </ContentContainer>
 
-      <BottomNavWrapper>
+      <BottomNavWrapper $isEditingItem={isEditingItem}>
         {isEditingItem ? (
           <ItemEditNav 
             title={currentEditingItem?.title || ""}
@@ -135,7 +166,7 @@ const ReceiptEdit = () => {
 
 export default ReceiptEdit;
 
-const ReceiptLayout = styled.div`
+const ReceiptLayout = styled.div<{ $isKeyboardOpen: boolean }>`
   background-color: #eeeeee;
   display: flex;
   flex-direction: column;
@@ -146,6 +177,16 @@ const ReceiptLayout = styled.div`
   padding: 0 20px;
   box-sizing: border-box;
   position: relative;
+  
+  /* 키보드가 올라올 때 높이 조정 */
+  ${props => props.$isKeyboardOpen && `
+    height: 100dvh; /* dynamic viewport height 사용 */
+    
+    @supports not (height: 100dvh) {
+      /* dvh를 지원하지 않는 브라우저를 위한 대체 */
+      height: calc(var(--vh, 1vh) * 100);
+    }
+  `}
 `;
 
 const TopContentWrapper = styled.div`
@@ -159,7 +200,7 @@ const ContentContainer = styled.div`
   width: 100%;
   margin-top: 20px;
   overflow: hidden;
-  min-height: 0; /* 중요: flex item이 줄어들 수 있도록 함 */
+  min-height: 0;
 `;
 
 const ScrollableContent = styled.div`
@@ -169,11 +210,11 @@ const ScrollableContent = styled.div`
   padding-bottom: 20px;
   
   /* 스크롤바 숨기기 */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   
   &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none;
   }
 `;
 
@@ -185,9 +226,15 @@ const ItemWrapper = styled.div`
   }
 `;
 
-const BottomNavWrapper = styled.div`
+const BottomNavWrapper = styled.div<{ $isEditingItem: boolean }>`
   flex-shrink: 0;
   width: 100%;
   position: relative;
   z-index: 10;
+  
+  /* 편집 모드일 때는 ItemEditNav가 키보드 위에 표시되도록 처리 */
+  ${props => props.$isEditingItem && `
+    position: relative;
+    z-index: 11;
+  `}
 `;
