@@ -10,6 +10,9 @@ import HomePage from "../pages/HomePage";
 import AlarmPage from "../pages/AlarmPage";
 import HistoryPage from "../pages/HistoryPage";
 import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
+import OCRLoadingPage from "../pages/OCRLoadingPage";
+import LoginPage from "../pages/LoginPage";
+import SelectPeopleCountPage from "../pages/SelectPeopleCountPage";
 import Layout from "../components/Layout/Layout";
 
 const Router = () => {
@@ -27,6 +30,9 @@ const Router = () => {
           <Route path="/review" element={<ReviewReceiptPage />} />
           <Route path="/finish" element={<FinishSettleupPage />} />
           <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
+          <Route path="/ocrloading" element={<OCRLoadingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/selectpeoplecount" element={<SelectPeopleCountPage />} />
           <Route path="/receiptedit" element={<ReceiptEditPage />} />
         </Route>
       </Routes>
