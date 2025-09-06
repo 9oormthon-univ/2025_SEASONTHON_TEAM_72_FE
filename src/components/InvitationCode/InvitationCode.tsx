@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import ErrorIcon from '../../assets/icons/error-icon.svg';
 
 // API 엔드포인트 상수
@@ -34,6 +35,7 @@ interface ApiError {
 type LoadingState = 'verifying' | 'joining' | null;
 
 const InvitationCode = () => {
+    const navigate = useNavigate();
     const [codes, setCodes] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -207,9 +209,9 @@ const InvitationCode = () => {
                 settlementTitle: verificationResult.settlementTitle
             });
 
-            // 성공 시 다음 페이지로 이동 또는 상태 업데이트
-            // 예: router.push('/settlement/' + joinResult.settlementId);
-            
+            // 성공 시 receiptconfirm 페이지로 이동
+            navigate('/receiptconfirm');
+
        } catch (error) {
             console.error('처리 실패:', error);
             // 에러 발생 시 코드 리셋
@@ -232,7 +234,7 @@ const InvitationCode = () => {
             setLoadingStep(null);
             abortControllerRef.current = null;
         }
-    }, [codes, verifyInvitationCode, joinWithInvitationCode]);
+    }, [codes, verifyInvitationCode, joinWithInvitationCode, navigator]);
     
     // 6자리 입력 완료 시 자동 제출
     useEffect(() => {

@@ -1,69 +1,83 @@
-# React + TypeScript + Vite
+# 청년 세대의 경제적, 사회적 어려움을 해결하기 위한 솔루션, 피자 🍕
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<!-- ppt 표지 삽입 -->
+<!-- 소개 멘트 쭉 ~ -->
 
-Currently, two official plugins are available:
+## 📌 기획배경 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📌 기능소개
 
-## Expanding the ESLint configuration
+<br/>
+<h2>📌 팀원 소개</h2>
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+<table align="center">
+    <tr align="center">
+      <td style="min-width: 100px;">
+            <a href="https://github.com/whoneykkk">
+              <img src="https://github.com/whoneykkk.png" width="100" alt="프로필사진">
+              <br />
+              <b>김혜원</b>
+            </a>
+        </td>
+              <td style="min-width: 100px;">
+            <a href="https://github.com/yeon17s">
+              <img src="https://github.com/yeon17s.png" width="100" alt="프로필사진">
+              <br />
+              <b>박서연</b>
+            </a>
+        </td>
+                </td>
+              <td style="min-width: 100px;">
+            <a href="https://github.com/hummingbbird">
+              <img src="https://github.com/hummingbbird.png" width="100" alt="프로필사진">
+              <br />
+              <b>이채영</b>
+            </a>
+        </td>
+      <td style="min-width: 100px;">
+            <a href="https://github.com/monikhyun">
+              <img src="https://github.com/monikhyun.png" width="100" alt="프로필사진">
+              <br />
+              <b>문익현</b>
+            </a>
+        </td>
+        <td style="min-width: 100px;">
+            <a href="https://github.com/parkJJae">
+              <img src="https://github.com/parkJJae.png" width="100" alt="프로필사진">
+              <br />
+              <b>박재현</b>
+            </a>
+        </td>
+        <td style="min-width: 100px;">
+            <a href="">
+              <img src="src/assets/images/ms_profile.jpg" width="100" alt="프로필사진">
+              <br />
+              <b>최명성</b>
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+      <td>
+            PM <br/>
+      </td>
+       <td>
+            Frontend <br/>
+      </td>
+       <td>
+            Frontend <br/>
+      </td>
+      <td>
+            Backend <br/>
+      </td>
+      <td>
+            Backend <br/>
+      </td>
+      <td>
+            Design <br/>
+      </td>
+    </tr>
+</table>
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+</br>
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📌 기술 스택

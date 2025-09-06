@@ -9,16 +9,14 @@ export interface TopNavProps {
 
 const TopNav: React.FC<TopNavProps> = ({ 
   title, 
-  showBackButton = true, 
+  showBackButton = false, 
   onBackClick 
 }) => {
   return (
     <TopNavContainer>
       {showBackButton ? (
         <BackButton onClick={onBackClick}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="9" height="14" viewBox="0 0 9 14" fill="none">
-            <path d="M8 1L2 7L8 13" stroke="#6B6B6B" strokeWidth="2" strokeLinecap="round"/> 
-          </svg>
+          <img src="src/assets/icons/back_icon.svg" alt="Back" />
         </BackButton>
       ) : (
         <Spacer />
