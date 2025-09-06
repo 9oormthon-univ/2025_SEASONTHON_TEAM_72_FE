@@ -1,0 +1,25 @@
+import { axiosInstance } from "../apis/axiosInstance";
+
+export const getOngoingSettlement = async (userId: string | number) => {
+  try {
+    const res = await axiosInstance.get("api/v1/settlements/ongoing", {
+      params: { userId },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("진행중 데이터 get 에러", error);
+    throw error;
+  }
+};
+
+export const getCompletedSettlement = async (userId: string | number) => {
+  try {
+    const res = await axiosInstance.get("api/v1/settlements/completed", {
+      params: { userId },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("완료된 데이터 get 에러", error);
+    throw error;
+  }
+};

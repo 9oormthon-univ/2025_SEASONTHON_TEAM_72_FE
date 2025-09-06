@@ -1,18 +1,65 @@
 import styled, { css } from "styled-components";
-import { useState, useMemo } from "react";
-import HomeData from "../../mocks/homeData.json";
+import { useState, useMemo, useEffect } from "react";
 import InProgressItem from "./InProgressItem";
 import type { StatusType } from "./InProgressItem";
 import { SETTLEMENT_STATUS_LABEL } from "../../constants/status";
+import {
+  getOngoingSettlement,
+  getCompletedSettlement,
+} from "../../apis/homeApi";
+import homeData from "../../mocks/homeData.json";
+import homedoneData from "../../mocks/homedoneData.json";
 
 const HomeSectionTabs = () => {
-  // TODO: 백엔드에서 정산의 내 역할 get
+  type HomeDataItem = {
+    settlement_id: string;
+    title: string;
+    created_at: string;
+    status: string;
+    role: string;
+  };
+
+  const [ongoingData, setOngoingData] = useState<HomeDataItem[]>(
+    homeData.map((it) => ({
+      ...it,
+      settlement_id: String(it.settlement_id),
+    }))
+  );
+  const [completedData, setCompletedData] = useState<HomeDataItem[]>(
+    homedoneData.map((it) => ({
+      ...it,
+      settlement_id: String(it.settlement_id),
+    }))
+  );
+
+  useEffect(() => {
+    const fetchOngoingSettlemnet = async () => {
+      const data = await getOngoingSettlement("userId"); // TODO: 전역에서 실제 userId 주입
+      setOngoingData(
+        (data || []).map((it: any) => ({
+          ...it,
+          settlement_id: String(it.settlement_id),
+        }))
+      );
+    };
+    const fetchCompletedSettlement = async () => {
+      const data = await getCompletedSettlement("userId"); // TODO: 전역에서 실제 userId 주입
+      setCompletedData(
+        (data || []).map((it: any) => ({
+          ...it,
+          settlement_id: String(it.settlement_id),
+        }))
+      );
+    };
+
+    fetchOngoingSettlemnet();
+    fetchCompletedSettlement();
+  }, []);
   const [tab, setTab] = useState<"inprogress" | "done">("inprogress");
 
   const list = useMemo(() => {
-    if (tab === "done") return HomeData.filter((d) => d.status === "DONE");
-    return HomeData.filter((d) => d.status !== "DONE");
-  }, [tab]);
+    return tab === "done" ? completedData : ongoingData;
+  }, [tab, ongoingData, completedData]);
 
   const formatDate = (value: string | number | Date) => {
     let d =
@@ -43,13 +90,14 @@ const HomeSectionTabs = () => {
       </TabsBar>
       <TabPanel>
         {list.map((it) => {
+          console.log("list:", list);
           const label =
             SETTLEMENT_STATUS_LABEL[
               it.status as keyof typeof SETTLEMENT_STATUS_LABEL
             ];
           return (
             <InProgressItem
-              key={it.id}
+              key={it.settlement_id}
               title={it.title}
               dueDate={formatDate(it.created_at as string)}
               status={label as StatusType}
@@ -69,16 +117,15 @@ const TabsWrapper = styled.div`
   margin-top: 32px;
   display: flex;
   flex-direction: column;
-  flex: 1; /* allow to expand within parent */
-  min-height: 0; /* enable child overflow scroll */
-  border: 1px solid red;
+  flex: 1;
+  min-height: 0;
 `;
 
 const TabsBar = styled.div`
   position: relative;
   display: flex;
   width: 115px;
-  flex: 0 0 auto; /* prevent shrinking so panel below can scroll */
+  flex: 0 0 auto;
 `;
 
 const TabButton = styled.button<{ $active: boolean }>`
@@ -115,12 +162,12 @@ const Indicator = styled.span<{ $index: number }>`
 
 const TabPanel = styled.div`
   padding-top: 12px;
-  flex: 1; /* take remaining height under tabs bar */
-  min-height: 0; /* required so overflow works in flex child */
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding-bottom: 16px; /* breathing room at bottom */
+  padding-bottom: 16px;
 `;
 
 const EmptyText = styled.div`
