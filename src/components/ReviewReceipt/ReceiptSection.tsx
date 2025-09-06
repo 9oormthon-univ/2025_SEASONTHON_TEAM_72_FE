@@ -23,7 +23,7 @@ const ReceiptSection = () => {
       </TitleWrapper>
       <ReceiptWrapper>
         {/* TODO: api 연결 예정 */}
-        <ReceiptDropdown data={dummyDataMe} />
+        {/* <ReceiptDropdown data={dummyDataMe} />
         <ReceiptDropdown data={dummyDataEntire} />
         {dummyData2.map((it) => (
           <ReceiptDropdown key={it.user} data={it} />
@@ -31,7 +31,7 @@ const ReceiptSection = () => {
         {LIMIT - hap > 0 &&
           Array.from({ length: LIMIT - hap }).map((_, i) => (
             <EmptyDropdown key={`empty-${i}`} />
-          ))}
+          ))} */}
       </ReceiptWrapper>
     </ReceiptDiv>
   );

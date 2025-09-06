@@ -17,3 +17,18 @@ export type ReceiptDataType = {
   settlement_id: number;
   data: DataType[];
 };
+
+export type AlarmDataType = {
+  id: number;
+  type:
+    | "SETTLEMENT_COMPLETED"
+    | "DEPOSIT_REQUEST"
+    | "DEPOSIT_CANCELED"
+    | "AWAITING_DEPOSIT"
+    | "DEPOSIT_CONFIRMED";
+  message: string;
+  read: boolean;
+  status: "AWAITING_DEPOSIT" | "IN_PROGRESS" | "DONE";
+  role: "MEMBER" | "OWNER";
+  created_at: string;
+};

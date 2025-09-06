@@ -90,7 +90,6 @@ const HomeSectionTabs = () => {
       </TabsBar>
       <TabPanel>
         {list.map((it) => {
-          console.log("list:", list);
           const label =
             SETTLEMENT_STATUS_LABEL[
               it.status as keyof typeof SETTLEMENT_STATUS_LABEL
