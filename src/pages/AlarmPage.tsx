@@ -6,16 +6,17 @@ import AlarmData from "../mocks/alarmData.json";
 import { getAlarmList } from "../apis/homeApi.ts";
 import type { AlarmDataType } from "../types/receipt.ts";
 import { useState, useEffect } from "react";
-
+import { useProfileStore } from "../stores/profileStore.ts";
 const AlarmPage = () => {
   const navigate = useNavigate();
+  const { profile } = useProfileStore();
   const [alarmData, setAlarmData] = useState<AlarmDataType[]>([
     ...(AlarmData as AlarmDataType[]),
   ]);
 
   useEffect(() => {
     const fetchAlarmData = async () => {
-      const data = await getAlarmList(1); // userId 보내야됨
+      const data = await getAlarmList(profile.userId);
       setAlarmData(data);
     };
 

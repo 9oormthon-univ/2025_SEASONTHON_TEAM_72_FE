@@ -1,19 +1,21 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
 import { useState, useEffect } from "react";
+import { useProfileStore } from "../stores/profileStore";
 import FloatingAlert from "../components/Result/FloatingAlert";
 import { getReceiptListManager } from "../apis/reviewReceiptApi";
 import settlementManagerData from "../mocks/settlementManagerData.json";
 import type { ReceiptDataType } from "../types/receipt";
 
 const ResultManagerPage = () => {
-  const myName = "이채영"; // TODO: 전역 데이터로 가져오기
+  const { profile } = useProfileStore();
   const [settlementData, setSettlementData] = useState<ReceiptDataType>(
     settlementManagerData
   );
   useEffect(() => {
     const fetchReceiptList = async () => {
-      const data = await getReceiptListManager("settlementId"); // TODO: settlementId 연결
+      // TODO: settlementId 연결
+      const data = await getReceiptListManager(0);
       setSettlementData(
         (data || []).map((it: any) => ({
           ...it,
@@ -45,7 +47,7 @@ const ResultManagerPage = () => {
       <ReceiptDiv>
         {(() => {
           const list = settlementData?.data || [];
-          const mine = list.find((d) => d.user === myName);
+          const mine = list.find((d) => d.user === profile.nickname);
           const total = list.find((d) => /전체/.test(d.user));
           const others = list.filter((d) => d !== mine && d !== total);
           const ordered = [mine, total, ...others.filter(Boolean)];
@@ -69,7 +71,7 @@ const ResultManagerPage = () => {
       </ReceiptDiv>
       <FloatingAlert
         show={showAlert}
-        message={`🍀${myName} 님 행운의 +${bonus}원 당첨!🍀`}
+        message={`🍀${profile.nickname} 님 행운의 +${bonus}원 당첨!🍀`}
         onClose={() => setShowAlert(false)}
       />
     </SettleupResultPageLayout>

@@ -1,5 +1,6 @@
 import styled, { css } from "styled-components";
 import { useState, useMemo, useEffect } from "react";
+import { useProfileStore } from "../../stores/profileStore";
 import InProgressItem from "./InProgressItem";
 import type { StatusType } from "./InProgressItem";
 import { SETTLEMENT_STATUS_LABEL } from "../../constants/status";
@@ -19,6 +20,7 @@ type HomeDataItem = {
 };
 
 const HomeSectionTabs = () => {
+  const { profile } = useProfileStore();
   const [ongoingData, setOngoingData] = useState<HomeDataItem[]>(
     homeData.map((it) => ({
       ...it,
@@ -34,7 +36,7 @@ const HomeSectionTabs = () => {
 
   useEffect(() => {
     const fetchOngoingSettlemnet = async () => {
-      const data = await getOngoingSettlement("userId"); // TODO: 전역에서 실제 userId 주입
+      const data = await getOngoingSettlement(profile.userId);
       setOngoingData(
         (data || []).map((it: any) => ({
           ...it,
@@ -43,7 +45,7 @@ const HomeSectionTabs = () => {
       );
     };
     const fetchCompletedSettlement = async () => {
-      const data = await getCompletedSettlement("userId"); // TODO: 전역에서 실제 userId 주입
+      const data = await getCompletedSettlement(profile.userId);
       setCompletedData(
         (data || []).map((it: any) => ({
           ...it,

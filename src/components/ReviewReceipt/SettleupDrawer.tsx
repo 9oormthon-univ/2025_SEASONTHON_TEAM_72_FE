@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useProfileStore } from "../../stores/profileStore";
 import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
 import SelectionAdjuster from "./SelectionAdjuster";
@@ -30,20 +31,19 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   onClose,
   onSave,
 }) => {
-  // TODO: 내 정보 전역 관리
-  const MYNAME = "이채영";
+  const { profile } = useProfileStore();
   const [portalEl, setPortalEl] = React.useState<HTMLElement | null>(null);
-  const mySelection = selections.find((s) => s.user === MYNAME);
+  const mySelection = selections.find((s) => s.user === profile.nickname);
   const [tempValue, setTempValue] = useState<number>(
     () => mySelection?.amount ?? 0
   );
   const [savedMark, setSavedMark] = useState(false);
   const [attemptedSave, setAttemptedSave] = useState(false);
   const myAmount = selections
-    .filter((s) => s.user === MYNAME)
+    .filter((s) => s.user === profile.nickname)
     .reduce<number>((a, c) => a + c.amount, 0);
   const othersSum = selections
-    .filter((s) => s.user !== MYNAME)
+    .filter((s) => s.user !== profile.nickname)
     .reduce<number>((a, c) => a + c.amount, 0);
   const totalIfSaved = othersSum + tempValue;
   const exceeds = totalIfSaved > quantity;
@@ -69,7 +69,8 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   };
   useEffect(() => {
     if (open) {
-      const latest = selections.find((s) => s.user === MYNAME)?.amount ?? 0;
+      const latest =
+        selections.find((s) => s.user === profile.nickname)?.amount ?? 0;
       setTempValue(latest);
       setAttemptedSave(false);
       setSavedMark(false);
@@ -138,7 +139,7 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
           )}
           <List>
             {selections
-              .filter((sel) => sel.user !== MYNAME)
+              .filter((sel) => sel.user !== profile.nickname)
               .map((sel) => {
                 const formatted = Number.isInteger(sel.amount)
                   ? sel.amount.toString()

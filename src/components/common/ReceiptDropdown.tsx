@@ -8,18 +8,8 @@ import {
   postUrge,
   postChangeDepositStateManager,
 } from "../../apis/reviewReceiptApi";
-
-interface ReceiptItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
-
-interface ReceiptData {
-  user: string;
-  userId: number;
-  items: ReceiptItem[];
-}
+import { useProfileStore } from "../../stores/profileStore";
+import type { ReceiptData } from "../../types/receipt";
 
 interface ReceiptDropdownProps {
   data: ReceiptData;
@@ -32,18 +22,15 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
   initialPaid = false,
   onStatusChange,
 }) => {
-  // TODO: 내 정보(이름, id) 전역 상태로 추가
-  const myName = "이채영";
-
   const settlementId = 0;
-
+  const { profile } = useProfileStore();
   const { openUser, setOpenUser } = useReceiptOpenStore();
   const open = openUser === data.user;
   const location = useLocation();
   const isManagerPage = location.pathname === "/result/manager";
   const isMemberPage = location.pathname === "/result/member";
 
-  const mine = data.user === myName;
+  const mine = data.user === profile.nickname;
   const isTotal = /전체/.test(data.user);
   const [isPaid, setIsPaid] = useState<boolean>(initialPaid);
 
@@ -79,7 +66,6 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
           label: "입금 요청하기",
           color: "#f44336",
           onClick: () => {
-            // TODO: 독촉 API 연동
             submitUrge();
           },
         },
@@ -87,7 +73,6 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
           label: "입금 완료하기",
           color: "#00D337",
           onClick: async () => {
-            // TODO: 입금 상태 변경 api 연동
             setIsPaid(true);
             onStatusChange?.(true);
             await postChangeDepositStateManager(settlementId, data.userId);
@@ -100,7 +85,6 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
           label: "입금 취소하기",
           color: "#f44336",
           onClick: async () => {
-            // TODO: 입금 상태 변경 api 연동
             setIsPaid(false);
             onStatusChange?.(false);
             await postChangeDepositStateManager(settlementId, data.userId);

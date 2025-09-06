@@ -7,6 +7,7 @@ import { getReceiptListMember, getBankList } from "../apis/reviewReceiptApi";
 import type { ReceiptDataType } from "../types/receipt";
 import bankMockData from "../mocks/bankData.json";
 import { useEffect, useState } from "react";
+import { useProfileStore } from "../stores/profileStore";
 
 type BankListItem = {
   account_id: number;
@@ -16,7 +17,7 @@ type BankListItem = {
 };
 
 const ResultMemberPage = () => {
-  const myName = "이채영"; // TODO global state
+  const { profile } = useProfileStore();
   const [settlementData, setSettlementData] = useState<ReceiptDataType>(
     settlementManagerData
   );
@@ -24,7 +25,8 @@ const ResultMemberPage = () => {
   const [bankData, setBankData] = useState<BankListItem[]>(bankMockData);
   useEffect(() => {
     const fetchReceiptList = async () => {
-      const data = await getReceiptListMember("settlementId"); // TODO: settlementId 연결
+      // TODO: settlementId 연결
+      const data = await getReceiptListMember(0);
       setSettlementData(
         (data || []).map((it: any) => ({
           ...it,
@@ -53,23 +55,21 @@ const ResultMemberPage = () => {
         <ReceiptDiv>
           {(() => {
             const list = settlementManagerData.data;
-            const mine = list.find((d) => d.user === myName);
+            const mine = list.find((d) => d.user === profile.nickname);
             const total = list.find((d) => /전체/.test(d.user));
             const others = list.filter((d) => d !== mine && d !== total);
             const ordered = [mine, total, ...others.filter(Boolean)];
-            return ordered
-              .filter(Boolean)
-              .map((entry) => (
-                <ReceiptDropdown
-                  key={entry?.user}
-                  initialPaid={entry?.paid}
-                  data={{
-                    user: entry!.user,
-                    userId: entry!.user_id,
-                    items: entry!.items,
-                  }}
-                />
-              ));
+            return ordered.filter(Boolean).map((entry) => (
+              <ReceiptDropdown
+                key={entry?.user}
+                initialPaid={entry?.paid}
+                data={{
+                  user: entry!.user,
+                  userId: entry!.user_id,
+                  items: entry!.items,
+                }}
+              />
+            ));
           })()}
         </ReceiptDiv>
         <AccountDiv>

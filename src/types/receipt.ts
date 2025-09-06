@@ -32,3 +32,15 @@ export type AlarmDataType = {
   role: "MEMBER" | "OWNER";
   created_at: string;
 };
+
+export interface ReceiptItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+export interface ReceiptData {
+  user: string;
+  userId: number;
+  items: ReceiptItem[];
+}
