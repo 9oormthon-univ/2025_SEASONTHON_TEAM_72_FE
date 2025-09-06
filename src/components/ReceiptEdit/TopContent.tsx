@@ -6,6 +6,7 @@ export interface TopContentProps {
   date?: string;
   onDateChange?: (date: string) => void;
   onTitleChange?: (title: string) => void;
+  onBackClick?: () => void;
   placeholder?: string;
 }
 
@@ -14,6 +15,7 @@ const TopContent: React.FC<TopContentProps> = ({
   date = "",
   onDateChange,
   onTitleChange,
+  onBackClick,
   placeholder = "YYYY-MM-DD"
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -83,6 +85,10 @@ const TopContent: React.FC<TopContentProps> = ({
   return (
     <TopContentContainer>
       <TopNavContainer>
+        <BackButton onClick={onBackClick}>
+          <img src="/src/assets/icons/back_icon.svg" alt="Back" />
+        </BackButton>
+
         <TitleContainer onClick={handleTitleContainerClick}>
           {isEditingTitle ? (
             <TitleInput
@@ -105,6 +111,8 @@ const TopContent: React.FC<TopContentProps> = ({
             </Title>
           )}
         </TitleContainer>
+        
+        <PlaceholderDiv />
       </TopNavContainer>
       
       <DateNavContainer>
@@ -151,9 +159,26 @@ const TopNavContainer = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+  flex-shrink: 0;
   margin-top: 45px;
   position: relative;
   height: 30px;
+`;
+
+const BackButton = styled.div` 
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px;
+  min-width: 30px; /* 최소 너비 보장 */
+  
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+const PlaceholderDiv = styled.div`
+    min-width: 40px; /* BackButton과 동일한 최소 너비 */
 `;
 
 const DateNavContainer = styled.div`
