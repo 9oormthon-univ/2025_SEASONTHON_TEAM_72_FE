@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom"; // useLocation 추가!
 import StartSettlementImage from "../../assets/images/start_settlement_img.svg";
 import { type OCRResult } from "../../apis/ocrApi";
 
@@ -11,6 +11,15 @@ const StartSettlement = () => {
   // OCR 로딩 상태 관리
   const [isOCRLoading, setIsOCRLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // OCR 로딩 상태가 변경될 때 네비게이션 처리
+  useEffect(() => {
+    if (isOCRLoading && selectedFile) {
+      navigate('/ocrloading', { 
+        state: { imageFile: selectedFile } 
+      });
+    }
+  }, [isOCRLoading, selectedFile, navigate]);
 
   const handleLoadReceiptClick = () => {
     fileInputRef.current?.click();
@@ -73,12 +82,6 @@ const StartSettlement = () => {
     // 에러 알림
     alert(`영수증 인식에 실패했습니다: ${error}`);
   };
-
-  // OCR 로딩 중이면 로딩 화면 표시
-  if (isOCRLoading && selectedFile) {
-    navigate('/ocrloading', 
-      { state: { imageFile: selectedFile } })
-  }
 
   return (
     <StartSettlementLayout>

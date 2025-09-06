@@ -26,32 +26,35 @@ const OCRLoading: React.FC<OCRLoadingProps> = ({
           return;
         }
 
-        // 진행률 시뮬레이션
+        // 진행률 시뮬레이션 시작
         const progressInterval = setInterval(() => {
-          setProgress((prev) => {
+          setProgress(prev => {
             if (prev >= 90) {
               clearInterval(progressInterval);
-              return 90;
+              return prev;
             }
-            return prev + Math.random() * 15;
+            return prev + Math.random() * 10 + 5;
           });
-        }, 500);
+        }, 300);
 
         // OCR 처리 시작
+        // 실제 API가 완료될 때까지 여기서 await 됩니다.
         const result = await (ocrApi as OCRApiInterface).processReceiptImage(imageFile);
         
-        // 처리 완료
+        // 진행률 인터벌 정리
         clearInterval(progressInterval);
+        
+        // 처리 완료
         setProgress(100);
         
-        // 성공 콜백 호출
+        // 성공 콜백 호출 (100%를 잠시 보여주기 위해 딜레이 유지)
         setTimeout(() => {
           onSuccess(result);
         }, 500);
 
       } catch (error) {
         console.error('OCR 처리 중 오류 발생:', error);
-        setProgress(0);
+        setProgress(0); // 에러 발생 시 진행률 0으로 리셋
         
         // 에러 콜백 호출
         const errorMessage = error instanceof Error ? error.message : 'OCR 처리 중 오류가 발생했습니다.';

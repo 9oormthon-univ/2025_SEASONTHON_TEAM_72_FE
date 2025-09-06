@@ -29,36 +29,45 @@ const OCRLoadingPage: React.FC = () => {
 
   useEffect(() => {
     // /startsettlement에서 전달받은 이미지 파일 확인
-    const state = location.state as { imageFile?: File };
+    const state = location.state as { imageFile?: File } | null;
     if (state?.imageFile) {
       setImageFile(state.imageFile);
     } else {
       // 이미지 파일이 없으면 startsettlement 페이지로 리다이렉트
+      console.warn('이미지 파일이 없어서 시작 페이지로 리다이렉트합니다.');
       navigate('/startsettlement');
     }
   }, [location, navigate]);
 
   const handleSuccess = (result: OCRResult) => {
     try {
+      console.log('OCR 결과:', result);
+      
+      // OCR API로부터 받은 결과를 파싱하여 ReceiptData 형태로 변환
       const parsedData = (ocrApi as OCRApiInterface).parseReceiptData(result);
+      
+      console.log('파싱된 영수증 데이터:', parsedData);
       
       // receiptconfirm 페이지로 데이터와 함께 이동
       navigate('/receiptconfirm', {
         state: {
           receiptData: parsedData,
-          originalImage: imageFile
+          originalImage: imageFile,
+          ocrError: false
         }
       });
     } catch (error) {
-      console.error('영수증 데이터 파싱 실패, 기본 데이터 사용:', error);
+      console.error('영수증 데이터 파싱 실패:', error);
       
+      // 파싱 실패 시 기본 데이터 사용
       const defaultData = createDefaultData();
       
-      // 기본 데이터로 receiptconfirm 페이지로 이동
       navigate('/receiptconfirm', {
         state: {
           receiptData: defaultData,
-          originalImage: imageFile
+          originalImage: imageFile,
+          ocrError: true,
+          errorMessage: '영수증 데이터 파싱에 실패하여 기본 데이터를 사용합니다.'
         }
       });
     }
@@ -75,7 +84,7 @@ const OCRLoadingPage: React.FC = () => {
         receiptData: defaultData,
         originalImage: imageFile,
         ocrError: true,
-        errorMessage: 'OCR 처리에 실패하여 기본 데이터를 사용합니다.'
+        errorMessage: error || 'OCR 처리에 실패하여 기본 데이터를 사용합니다.'
       }
     });
   };
