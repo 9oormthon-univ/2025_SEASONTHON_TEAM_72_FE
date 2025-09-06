@@ -12,10 +12,13 @@ const AlarmListItem: React.FC<AlarmListItemProps> = ({
   read,
   type,
 }) => {
+  const iconSrc = read
+    ? "/src/assets/icons/read_icon.svg"
+    : ALARM_TYPE_ICON[type];
   return (
     <Item $read={read}>
       <StatusBadge>
-        <IconImg src={ALARM_TYPE_ICON[type]} alt={type} />
+        <IconImg src={iconSrc} alt={read ? "read" : type} />
       </StatusBadge>
       <AlarmText>{alarmText}</AlarmText>
     </Item>
