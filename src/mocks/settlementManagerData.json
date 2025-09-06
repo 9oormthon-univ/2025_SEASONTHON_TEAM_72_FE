@@ -1,6 +1,6 @@
 {
   "title": "홈플러스 정산",
-  "총괄자id": "dkakfjfklas",
+  "manager_id": 1,
   "data": [
     {
       "user": "전체",

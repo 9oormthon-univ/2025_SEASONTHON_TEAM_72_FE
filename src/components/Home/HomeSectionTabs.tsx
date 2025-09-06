@@ -10,15 +10,15 @@ import {
 import homeData from "../../mocks/homeData.json";
 import homedoneData from "../../mocks/homedoneData.json";
 
-const HomeSectionTabs = () => {
-  type HomeDataItem = {
-    settlement_id: string;
-    title: string;
-    created_at: string;
-    status: string;
-    role: string;
-  };
+type HomeDataItem = {
+  settlement_id: string;
+  title: string;
+  created_at: string;
+  status: string;
+  role: string;
+};
 
+const HomeSectionTabs = () => {
   const [ongoingData, setOngoingData] = useState<HomeDataItem[]>(
     homeData.map((it) => ({
       ...it,

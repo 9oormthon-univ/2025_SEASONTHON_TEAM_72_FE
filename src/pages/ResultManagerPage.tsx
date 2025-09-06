@@ -1,11 +1,29 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
-import settlementManagerData from "../mocks/settlementManagerData.json";
 import { useState, useEffect } from "react";
 import FloatingAlert from "../components/Result/FloatingAlert";
+import { getReceiptListManager } from "../apis/reviewReceiptApi";
+import settlementManagerData from "../mocks/settlementManagerData.json";
+import type { ReceiptDataType } from "../types/receipt";
+
 
 const ResultManagerPage = () => {
-  const myName = "이채영"; // TODO replace with global user state
+  const myName = "이채영"; // TODO: 전역 데이터로 가져오기
+  const [settlementData, setSettlementData] = useState<ReceiptDataType>(
+    settlementManagerData
+  );
+  useEffect(() => {
+    const fetchReceiptList = async () => {
+      const data = await getReceiptListManager("settlementId"); // TODO: settlementId 연결
+      setSettlementData(
+        (data || []).map((it: any) => ({
+          ...it,
+        }))
+      );
+    };
+    fetchReceiptList();
+  }, []);
+
   const [showAlert, setShowAlert] = useState(false);
   const [bonus, setBonus] = useState(0);
 
@@ -23,13 +41,12 @@ const ResultManagerPage = () => {
   return (
     <SettleupResultPageLayout>
       <TitleWrapper>
-        <TitleP>하나로마트 정산</TitleP>
+        <TitleP>{settlementData?.title}</TitleP>
       </TitleWrapper>
       <ReceiptDiv>
         {(() => {
-          const myNameKey = myName;
-          const list = settlementManagerData.data;
-          const mine = list.find((d) => d.user === myNameKey);
+          const list = settlementData?.data || [];
+          const mine = list.find((d) => d.user === myName);
           const total = list.find((d) => /전체/.test(d.user));
           const others = list.filter((d) => d !== mine && d !== total);
           const ordered = [mine, total, ...others.filter(Boolean)];
