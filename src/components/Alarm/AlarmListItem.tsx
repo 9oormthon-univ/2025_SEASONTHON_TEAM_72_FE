@@ -1,26 +1,26 @@
-import styled, { css } from "styled-components";
-import { SETTLEMENT_STATUS_LABEL } from "../../constants/status";
-import { FaRegCheckCircle } from "react-icons/fa";
+import styled from "styled-components";
+import { ALARM_TYPE_ICON } from "../../constants/status";
 
-export interface AlarmListItemProps {
-  settlementName: string;
+interface AlarmListItemProps {
   alarmText: string;
-  status: keyof typeof SETTLEMENT_STATUS_LABEL; // backend enum
   read: boolean;
+  type: string;
 }
 
 const AlarmListItem: React.FC<AlarmListItemProps> = ({
-  settlementName,
   alarmText,
-  status,
   read,
+  type,
 }) => {
+  const iconSrc = read
+    ? "/src/assets/icons/read_icon.svg"
+    : ALARM_TYPE_ICON[type];
   return (
     <Item $read={read}>
-      <StatusBadge $status={status} />
-      <AlarmText>
-        [{settlementName}] {alarmText}
-      </AlarmText>
+      <StatusBadge>
+        <IconImg src={iconSrc} alt={read ? "read" : type} />
+      </StatusBadge>
+      <AlarmText>{alarmText}</AlarmText>
     </Item>
   );
 };
@@ -29,12 +29,13 @@ export default AlarmListItem;
 
 const Item = styled.div<{ $read: boolean }>`
   display: flex;
+  align-items: center;
   padding: 6px 10px 6px;
   margin-bottom: 10px;
   border: 1px solid #d9d9d9;
   border-radius: 5px;
   gap: 3px;
-  background: ${({ $read }) => ($read ? "#ffffff" : "#eeeeee")};
+  background: ${({ $read }) => ($read ? "#eeeeee" : "#ffffff")};
 `;
 
 const AlarmText = styled.p`
@@ -44,33 +45,18 @@ const AlarmText = styled.p`
   line-height: 1.3;
 `;
 
-const StatusBadge = styled(FaRegCheckCircle)<{
-  $status: keyof typeof SETTLEMENT_STATUS_LABEL;
-}>`
-  font-size: 12px;
-  padding: 3px 6px 4px;
-  font-weight: 600;
+const StatusBadge = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  margin-right: 6px;
+`;
 
-  ${({ $status }) => {
-    switch ($status) {
-      case "IN_PROGRESS":
-        return css`
-          color: #00d337;
-        `;
-      case "AWAITING_DEPOSIT":
-        return css`
-          color: #f44336;
-        `;
-      case "NEEDS_ATTENTION":
-        return css`
-          color: #f44336;
-        `;
-      case "DONE":
-        return css`
-          color: #9e9e9e;
-        `;
-      default:
-        return css``;
-    }
-  }}
+const IconImg = styled.img`
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
 `;

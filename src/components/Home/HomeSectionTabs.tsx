@@ -1,25 +1,76 @@
 import styled, { css } from "styled-components";
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import HomeData from "../../mocks/homeData.json";
+import { useState, useMemo, useEffect } from "react";
+import { useProfileStore } from "../../stores/profileStore";
 import InProgressItem from "./InProgressItem";
 import type { StatusType } from "./InProgressItem";
 import { SETTLEMENT_STATUS_LABEL } from "../../constants/status";
-import rightIcon from "../../assets/icons/right_icon.svg";
+import {
+  getOngoingSettlement,
+  getCompletedSettlement,
+} from "../../apis/homeApi";
+import homeData from "../../mocks/homeData.json";
+import homedoneData from "../../mocks/homedoneData.json";
+
+type HomeDataItem = {
+  settlement_id: string;
+  title: string;
+  created_at: string;
+  status: string;
+  role: string;
+};
 
 const HomeSectionTabs = () => {
-  // TODO: 백엔드에서 정산의 내 역할 get
-  const MYROLE = "OWNER";
+  const { profile } = useProfileStore();
+  const [ongoingData, setOngoingData] = useState<HomeDataItem[]>(
+    homeData.map((it) => ({
+      ...it,
+      settlement_id: String(it.settlement_id),
+    }))
+  );
+  const [completedData, setCompletedData] = useState<HomeDataItem[]>(
+    homedoneData.map((it) => ({
+      ...it,
+      settlement_id: String(it.settlement_id),
+    }))
+  );
+
+  useEffect(() => {
+    const fetchOngoingSettlemnet = async () => {
+      const data = await getOngoingSettlement(profile.userId);
+      setOngoingData(
+        (data || []).map((it: any) => ({
+          ...it,
+          settlement_id: String(it.settlement_id),
+        }))
+      );
+    };
+    const fetchCompletedSettlement = async () => {
+      const data = await getCompletedSettlement(profile.userId);
+      setCompletedData(
+        (data || []).map((it: any) => ({
+          ...it,
+          settlement_id: String(it.settlement_id),
+        }))
+      );
+    };
+
+    fetchOngoingSettlemnet();
+    fetchCompletedSettlement();
+  }, []);
   const [tab, setTab] = useState<"inprogress" | "done">("inprogress");
-  const navigate = useNavigate();
 
   const list = useMemo(() => {
-    if (tab === "done") return HomeData.filter((d) => d.status === "DONE");
-    return HomeData.filter((d) => d.status !== "DONE");
-  }, [tab]);
+    return tab === "done" ? completedData : ongoingData;
+  }, [tab, ongoingData, completedData]);
 
-  const formatDate = (ts: number) => {
-    const d = new Date(ts);
+  const formatDate = (value: string | number | Date) => {
+    let d =
+      typeof value === "string" || typeof value === "number"
+        ? new Date(value)
+        : new Date(value.getTime());
+    if (isNaN(d.getTime()) && typeof value === "string") {
+      d = new Date(value.replace(" ", "T"));
+    }
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const dd = String(d.getDate()).padStart(2, "0");
     return `${mm}.${dd}`;
@@ -40,11 +91,6 @@ const HomeSectionTabs = () => {
         <Indicator $index={tab === "inprogress" ? 0 : 1} />
       </TabsBar>
       <TabPanel>
-        <ArrowRow onClick={() => navigate(`/history?state=${tab}`)}>
-          <ArrowButton aria-label="히스토리로 이동">
-            <img src={rightIcon} alt="히스토리" />
-          </ArrowButton>
-        </ArrowRow>
         {list.map((it) => {
           const label =
             SETTLEMENT_STATUS_LABEL[
@@ -52,10 +98,12 @@ const HomeSectionTabs = () => {
             ];
           return (
             <InProgressItem
-              key={it.id}
-              title={it.name}
-              dueDate={formatDate(it.date as unknown as number)}
+              key={it.settlement_id}
+              title={it.title}
+              dueDate={formatDate(it.created_at as string)}
               status={label as StatusType}
+              settlementId={it.settlement_id}
+              role={it.role === "OWNER" ? "OWNER" : "MEMBER"}
             />
           );
         })}
@@ -70,12 +118,17 @@ export default HomeSectionTabs;
 const TabsWrapper = styled.div`
   width: 100%;
   margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 `;
 
 const TabsBar = styled.div`
   position: relative;
   display: flex;
   width: 115px;
+  flex: 0 0 auto;
 `;
 
 const TabButton = styled.button<{ $active: boolean }>`
@@ -111,7 +164,13 @@ const Indicator = styled.span<{ $index: number }>`
 `;
 
 const TabPanel = styled.div`
-  padding-top: 8px;
+  padding-top: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: 16px;
 `;
 
 const EmptyText = styled.div`
@@ -119,24 +178,4 @@ const EmptyText = styled.div`
   font-size: 13px;
   color: #888;
   text-align: center;
-`;
-const ArrowRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 20px;
-  padding-bottom: 10px;
-  width: 100%;
-`;
-
-const ArrowButton = styled.button`
-  background: transparent;
-  border: none;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  > img {
-    width: 20px;
-    height: 20px;
-  }
 `;

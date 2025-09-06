@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import profileImg from "../../assets/images/profile_img.svg";
-import alarmIcon from "../../assets/icons/alarm_icon.svg";
+import logoImg from "../../assets/images/logo_img.svg";
+import alarmIcon from "../../assets/icons/bell_icon.svg";
 import mypageIcon from "../../assets/images/mypage_icon.svg";
 import { useNavigate } from "react-router-dom";
 
@@ -9,16 +9,13 @@ const AppBar = () => {
   return (
     <BarWrapper>
       <Left>
-        <IconImage src={profileImg} alt="profile" />
+        <IconImage src={logoImg} alt="profile" />
       </Left>
       <Right>
-        <IconButton
-          aria-label="alarm"
-          onClick={() => navigate(`/alarm`)}
-        >
+        <IconButton aria-label="alarm" onClick={() => navigate(`/alarm`)}>
           <SmallIcon src={alarmIcon} alt="alarm" />
         </IconButton>
-        <IconButton aria-label="mypage">
+        <IconButton aria-label="mypage" onClick={() => navigate(`/mypage`)}>
           <SmallIcon src={mypageIcon} alt="mypage" />
         </IconButton>
       </Right>
@@ -49,8 +46,7 @@ const Right = styled.div`
 `;
 
 const IconImage = styled.img`
-  width: 22px;
-  height: 22px;
+  width: 60px;
   object-fit: cover;
 `;
 

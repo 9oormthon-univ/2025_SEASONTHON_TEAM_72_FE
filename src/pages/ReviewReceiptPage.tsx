@@ -5,7 +5,9 @@ import ReceiptSection from "../components/ReviewReceipt/ReceiptSection";
 import Carousel from "../components/ReviewReceipt/Carousel";
 import SettleupSection from "../components/ReviewReceipt/SettleupSection";
 import { IoShareSocialOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { postParticipateCode } from "../apis/reviewReceiptApi";
 import LinkShareModal from "../components/ReviewReceipt/LinkShareModal";
 
 export const dummyDataMe = {
@@ -50,7 +52,38 @@ export const dummyData2 = [
 
 const ReviewReceiptPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const shareCode = "ABC123"; // TODO: 실제 공유 코드 값으로 교체
+  const [shareCode, setShareCode] = useState<string | undefined>("ABC123");
+  const [shareUrl, setShareUrl] = useState<string | undefined>("https://www.naver.com");
+  const [searchParams] = useSearchParams();
+  const settlementIdParam = searchParams.get("settlementId");
+  const settlementId = settlementIdParam
+    ? Number(settlementIdParam)
+    : undefined;
+
+  const handleShareClick = useCallback(async () => {
+    try {
+      if (!settlementId || Number.isNaN(settlementId)) {
+        console.warn("settlementId 가 유효하지 않습니다.", settlementIdParam);
+        setIsModalOpen(true); // fallback: 일단 모달은 띄움 (기본 코드 노출)
+        return;
+      }
+      const res = await postParticipateCode(settlementId);
+      // API 응답 형태에 따라 code 위치 방어적으로 처리
+      const code: string | undefined = (res && (res.code ?? res.data?.code)) as
+        | string
+        | undefined;
+      if (code) setShareCode(code);
+
+      const url: string | undefined = (res && (res.url ?? res.data?.url)) as
+        | string
+        | undefined;
+      if (url) setShareUrl(url);
+      setIsModalOpen(true);
+    } catch (e) {
+      console.error("공유 코드 생성 실패", e);
+      setIsModalOpen(true); // 실패해도 안내 모달은 노출 (기본 코드)
+    }
+  }, [settlementId, settlementIdParam]);
 
   return (
     <ReviewReceiptPageLayout>
@@ -58,7 +91,7 @@ const ReviewReceiptPage = () => {
         <TitleP>정산명</TitleP>
         <IoShareSocialOutline
           style={{ fontSize: 18, cursor: "pointer" }}
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleShareClick}
         />
       </TitleWrapper>
       <DashboardDiv>
@@ -72,6 +105,7 @@ const ReviewReceiptPage = () => {
       <LinkShareModal
         open={isModalOpen}
         code={shareCode}
+        url={shareUrl ?? ""}
         onClose={() => setIsModalOpen(false)}
       />
     </ReviewReceiptPageLayout>

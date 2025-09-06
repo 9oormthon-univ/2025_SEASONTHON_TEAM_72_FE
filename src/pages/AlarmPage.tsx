@@ -2,37 +2,26 @@ import styled from "styled-components";
 import rightIcon from "../assets/icons/right_icon.svg";
 import { useNavigate } from "react-router-dom";
 import AlarmListItem from "../components/Alarm/AlarmListItem.tsx";
-import type { AlarmListItemProps } from "../components/Alarm/AlarmListItem.tsx";
-
-const mockAlarms: AlarmListItemProps[] = [
-  {
-    settlementName: "코스트코",
-    alarmText: "입금이 아직 완료되지 않았어요.",
-    status: "AWAITING_DEPOSIT",
-    read: false,
-  },
-  {
-    settlementName: "휴지 공구!",
-    alarmText: "정산이 진행중입니다.",
-    status: "IN_PROGRESS",
-    read: true,
-  },
-  {
-    settlementName: "감자 한 박스",
-    alarmText: "관리자가 확인이 필요하대요.",
-    status: "NEEDS_ATTENTION",
-    read: false,
-  },
-  {
-    settlementName: "수박 소분",
-    alarmText: "정산이 완료되었어요!",
-    status: "DONE",
-    read: true,
-  },
-];
-
+import AlarmData from "../mocks/alarmData.json";
+import { getAlarmList } from "../apis/homeApi.ts";
+import type { AlarmDataType } from "../types/receipt.ts";
+import { useState, useEffect } from "react";
+import { useProfileStore } from "../stores/profileStore.ts";
 const AlarmPage = () => {
   const navigate = useNavigate();
+  const { profile } = useProfileStore();
+  const [alarmData, setAlarmData] = useState<AlarmDataType[]>([
+    ...(AlarmData as AlarmDataType[]),
+  ]);
+
+  useEffect(() => {
+    const fetchAlarmData = async () => {
+      const data = await getAlarmList(profile.userId);
+      setAlarmData(data);
+    };
+
+    fetchAlarmData();
+  }, []);
   return (
     <PageWrapper>
       <Header>
@@ -43,8 +32,13 @@ const AlarmPage = () => {
         <HeaderRight />
       </Header>
       <ListWrapper>
-        {mockAlarms.map((a, idx) => (
-          <AlarmListItem key={idx} {...a} />
+        {alarmData.map((it) => (
+          <AlarmListItem
+            key={it.id}
+            alarmText={it.message}
+            read={it.read}
+            type={it.type}
+          />
         ))}
       </ListWrapper>
     </PageWrapper>
@@ -95,7 +89,7 @@ const Title = styled.h2`
 `;
 
 const HeaderRight = styled.div`
-  width: 22px; 
+  width: 22px;
   height: 22px;
 `;
 

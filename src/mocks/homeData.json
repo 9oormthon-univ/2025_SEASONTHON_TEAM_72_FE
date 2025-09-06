@@ -1,44 +1,58 @@
 [
   {
-    "id": 101,
-    "name": "코스트코",
-    "date": 1755820800000,
-    "status": "IN_PROGRESS"
+    "settlement_id": 101,
+    "title": "코스트코",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "NEEDS_ATTENTION",
+    "role": "OWNER"
   },
   {
-    "id": 102,
-    "name": "휴지 공구!",
-    "date": 1756080000000,
-    "status": "AWAITING_DEPOSIT"
+    "settlement_id": 102,
+    "title": "이마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
   },
   {
-    "id": 103,
-    "name": "감자 한 박스",
-    "date": 1756339200000,
-    "status": "NEEDS_ATTENTION"
+    "settlement_id": 104,
+    "title": "하나로마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
   },
   {
-    "id": 104,
-    "name": "수박 소분",
-    "date": 1756684800000,
-    "status": "IN_PROGRESS"
+    "settlement_id": 106,
+    "title": "마켓컬리",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
   },
   {
-    "id": 105,
-    "name": "이마트정산해요",
-    "date": 1756857600000,
-    "status": "AWAITING_DEPOSIT"
+    "settlement_id": 107,
+    "title": "쿠팡마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "AWAITING_DEPOSIT",
+    "role": "MEMBER"
   },
   {
-    "id": 106,
-    "name": "이마트정산해요",
-    "date": 1756857600000,
-    "status": "DONE"
+    "settlement_id": 108,
+    "title": "GS더프레시",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
   },
   {
-    "id": 107,
-    "name": "이마트정산해요",
-    "date": 1756857600000,
-    "status": "DONE"
+    "settlement_id": 109,
+    "title": "쿠팡마트",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "AWAITING_DEPOSIT",
+    "role": "MEMBER"
+  },
+  {
+    "settlement_id": 110,
+    "title": "GS더프레시",
+    "created_at": "2025-09-06T03:37:22",
+    "status": "IN_PROGRESS",
+    "role": "MEMBER"
   }
 ]

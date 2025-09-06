@@ -3,21 +3,16 @@ import styled, { keyframes } from "styled-components";
 import { useLocation } from "react-router-dom";
 import arrowIcon from "../../assets/icons/keyboard_arrow_down.svg";
 import { useReceiptOpenStore } from "../../stores/useReceiptOpenStore";
-
-interface ReceiptItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
-
-interface ReceiptData {
-  user: string;
-  items: ReceiptItem[];
-}
+import {
+  postChangeDepositState,
+  postUrge,
+  postChangeDepositStateManager,
+} from "../../apis/reviewReceiptApi";
+import { useProfileStore } from "../../stores/profileStore";
+import type { ReceiptData } from "../../types/receipt";
 
 interface ReceiptDropdownProps {
   data: ReceiptData;
-  myName?: string;
   initialPaid?: boolean;
   onStatusChange?: (paid: boolean) => void;
 }
@@ -27,15 +22,15 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
   initialPaid = false,
   onStatusChange,
 }) => {
-  // TODO: 내 정보 전역 상태로 추가
-  const myName = "이채영";
+  const settlementId = 0;
+  const { profile } = useProfileStore();
   const { openUser, setOpenUser } = useReceiptOpenStore();
   const open = openUser === data.user;
   const location = useLocation();
   const isManagerPage = location.pathname === "/result/manager";
   const isMemberPage = location.pathname === "/result/member";
 
-  const mine = data.user === myName;
+  const mine = data.user === profile.nickname;
   const isTotal = /전체/.test(data.user);
   const [isPaid, setIsPaid] = useState<boolean>(initialPaid);
 
@@ -44,14 +39,19 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
     0
   );
   const totalPrice = data.items.reduce((sum, item) => sum + item.price, 0);
-  const togglePaid = () => {
+  const togglePaid = async () => {
+    console.log("togglePaid 클릭", isPaid);
     setIsPaid((prev) => {
       const next = !prev;
       onStatusChange?.(next);
       return next;
     });
+    await postChangeDepositState(settlementId, data.userId);
   };
 
+  const submitUrge = async () => {
+    await postUrge(data.userId); //
+  };
   const showStatusDot = isManagerPage && !mine && !isTotal;
   const statusDotColor = isPaid ? "#07A320" : "#f44336";
 
@@ -63,35 +63,36 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
     if (!isPaid) {
       actionButtons = [
         {
-          label: "독촉하기",
+          label: "입금 요청하기",
           color: "#f44336",
           onClick: () => {
-            // TODO: 독촉 API 연동
-            console.log(`remind payment -> ${data.user}`);
+            submitUrge();
           },
         },
         {
           label: "입금 완료하기",
           color: "#00D337",
-          onClick: () => {
+          onClick: async () => {
             setIsPaid(true);
             onStatusChange?.(true);
+            await postChangeDepositStateManager(settlementId, data.userId);
           },
         },
       ];
     } else {
-      // 정산 완료 -> 취소 버튼 하나
       actionButtons = [
         {
           label: "입금 취소하기",
           color: "#f44336",
-          onClick: () => {
+          onClick: async () => {
             setIsPaid(false);
             onStatusChange?.(false);
+            await postChangeDepositStateManager(settlementId, data.userId);
           },
         },
       ];
     }
+    // 역할이 참여자인 경우
   } else if (!isTotal && isMemberPage && mine) {
     actionButtons = [
       {

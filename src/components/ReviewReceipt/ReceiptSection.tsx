@@ -2,14 +2,12 @@ import styled from "styled-components";
 import { MdNotInterested } from "react-icons/md";
 import ReceiptDropdown from "../common/ReceiptDropdown";
 import EmptyDropdown from "../common/EmptyDropdown";
-import {
-  dummyData2,
-  dummyDataMe,
-  dummyDataEntire,
-} from "../../pages/ReviewReceiptPage";
+import settlementManagerData from "../../mocks/settlementManagerData.json";
+import { useProfileStore } from "../../stores/profileStore";
 
 const ReceiptSection = () => {
   // TODO: api로 인원 제한 수 get 예정
+  const { profile } = useProfileStore();
   const LIMIT = 6;
   const hap = 5;
   return (
@@ -23,11 +21,29 @@ const ReceiptSection = () => {
       </TitleWrapper>
       <ReceiptWrapper>
         {/* TODO: api 연결 예정 */}
-        <ReceiptDropdown data={dummyDataMe} />
+        {/* <ReceiptDropdown data={dummyDataMe} />
         <ReceiptDropdown data={dummyDataEntire} />
         {dummyData2.map((it) => (
           <ReceiptDropdown key={it.user} data={it} />
-        ))}
+        ))} */}
+        {(() => {
+          const list = settlementManagerData.data;
+          const mine = list.find((d) => d.user === profile.nickname);
+          const total = list.find((d) => /전체/.test(d.user));
+          const others = list.filter((d) => d !== mine && d !== total);
+          const ordered = [mine, total, ...others.filter(Boolean)];
+          return ordered.filter(Boolean).map((entry) => (
+            <ReceiptDropdown
+              key={entry?.user}
+              initialPaid={entry?.paid}
+              data={{
+                user: entry!.user,
+                userId: entry!.user_id,
+                items: entry!.items,
+              }}
+            />
+          ));
+        })()}
         {LIMIT - hap > 0 &&
           Array.from({ length: LIMIT - hap }).map((_, i) => (
             <EmptyDropdown key={`empty-${i}`} />

@@ -1,10 +1,50 @@
 import styled from "styled-components";
 import ReceiptDropdown from "../components/common/ReceiptDropdown";
 import AccountListItem from "../components/Result/AccountListItem";
-import { dummyData2, dummyDataEntire, dummyDataMe } from "./ReviewReceiptPage";
+import settlementManagerData from "../mocks/settlementManagerData.json";
 import { SettleupResultPageLayout, TitleWrapper } from "./ResultManagerPage";
+import { getReceiptListMember, getBankList } from "../apis/reviewReceiptApi";
+import type { ReceiptDataType } from "../types/receipt";
+import bankMockData from "../mocks/bankData.json";
+import { useEffect, useState } from "react";
+import { useProfileStore } from "../stores/profileStore";
+
+type BankListItem = {
+  account_id: number;
+  bank_name: string;
+  user_name: string;
+  account_number: string;
+};
 
 const ResultMemberPage = () => {
+  const { profile } = useProfileStore();
+  const [settlementData, setSettlementData] = useState<ReceiptDataType>(
+    settlementManagerData
+  );
+
+  const [bankData, setBankData] = useState<BankListItem[]>(bankMockData);
+  useEffect(() => {
+    const fetchReceiptList = async () => {
+      // TODO: settlementId 연결
+      const data = await getReceiptListMember(0);
+      setSettlementData(
+        (data || []).map((it: any) => ({
+          ...it,
+        }))
+      );
+    };
+    fetchReceiptList();
+
+    const fetchBankList = async () => {
+      const data = await getBankList(111);
+      setBankData(
+        (data || []).map((it: any) => ({
+          ...it,
+        }))
+      );
+    };
+    fetchBankList();
+  }, []);
   return (
     <SettleupResultPageLayout>
       <TitleWrapper>
@@ -13,24 +53,37 @@ const ResultMemberPage = () => {
       <ContentSection>
         <WarningDiv>❗입금 시 입금자명은 참여 닉네임으로 해주세요.</WarningDiv>
         <ReceiptDiv>
-          <ReceiptDropdown data={dummyDataMe} />
-          <ReceiptDropdown data={dummyDataEntire} />
-          {dummyData2.map((it) => (
-            <ReceiptDropdown key={it.user} data={it} />
-          ))}
+          {(() => {
+            const list = settlementManagerData.data;
+            const mine = list.find((d) => d.user === profile.nickname);
+            const total = list.find((d) => /전체/.test(d.user));
+            const others = list.filter((d) => d !== mine && d !== total);
+            const ordered = [mine, total, ...others.filter(Boolean)];
+            return ordered.filter(Boolean).map((entry) => (
+              <ReceiptDropdown
+                key={entry?.user}
+                initialPaid={entry?.paid}
+                data={{
+                  user: entry!.user,
+                  userId: entry!.user_id,
+                  items: entry!.items,
+                }}
+              />
+            ));
+          })()}
         </ReceiptDiv>
         <AccountDiv>
           <p>입금 계좌</p>
-          <AccountListItem
-            bank="우리"
-            accountNumber="3333-18-8210203"
-            owner="이채영"
-          />
-          <AccountListItem
-            bank="우리"
-            accountNumber="3333-18-8210203"
-            owner="이채영"
-          />
+          {bankData.map((it) => {
+            return (
+              <AccountListItem
+                key={it.account_id}
+                bank={it.bank_name}
+                accountNumber={it.account_number}
+                owner={it.user_name}
+              />
+            );
+          })}
         </AccountDiv>
       </ContentSection>
     </SettleupResultPageLayout>

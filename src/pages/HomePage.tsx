@@ -29,8 +29,7 @@ export default HomePage;
 const HomePageLayout = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 100%;
+  height: 100dvh; /* ensure full viewport height for internal scrolling */
 `;
 
 const BodyContent = styled.div`
@@ -40,6 +39,8 @@ const BodyContent = styled.div`
   background-color: white;
   padding: 0 20px;
   flex-direction: column;
+  flex: 1; /* take remaining space below AppBar */
+  overflow: hidden; /* allow inner container to manage its own scroll */
 `;
 
 const NewSettlementWrapper = styled.div`
@@ -56,6 +57,9 @@ const NewSettlementWrapper = styled.div`
 
 const TabsContainer = styled.div`
   width: 100%;
+  flex: 1; /* occupy remaining space below the banner */
+  display: flex; /* allow child to stretch */
+  min-height: 0; /* critical for flex children to be scrollable */
 `;
 
 const Title = styled.h1`

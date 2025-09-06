@@ -11,3 +11,10 @@ export interface BottomNavProps {
   secondaryLabel?: string;
   onSecondaryClick?: () => void;
 }
+
+export type ProfileType = {
+  userId: number;
+  email: string;
+  nickname: string;
+  token: string;
+};

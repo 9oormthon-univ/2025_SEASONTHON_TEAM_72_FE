@@ -1,9 +1,11 @@
+import { FaRegCheckCircle } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
+import { useProfileStore } from "../../stores/profileStore";
 import { createPortal } from "react-dom";
 import styled, { keyframes } from "styled-components";
 import SelectionAdjuster from "./SelectionAdjuster";
 import { BsXLg } from "react-icons/bs";
-import { FaRegCheckCircle } from "react-icons/fa";
+
 import userIcon from "../../assets/icons/user_icon.svg";
 
 export interface UserSelection {
@@ -30,20 +32,19 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   onClose,
   onSave,
 }) => {
-  // TODO: 내 정보 전역 관리
-  const MYNAME = "이채영";
+  const { profile } = useProfileStore();
   const [portalEl, setPortalEl] = React.useState<HTMLElement | null>(null);
-  const mySelection = selections.find((s) => s.user === MYNAME);
+  const mySelection = selections.find((s) => s.user === profile.nickname);
   const [tempValue, setTempValue] = useState<number>(
     () => mySelection?.amount ?? 0
   );
   const [savedMark, setSavedMark] = useState(false);
   const [attemptedSave, setAttemptedSave] = useState(false);
   const myAmount = selections
-    .filter((s) => s.user === MYNAME)
+    .filter((s) => s.user === profile.nickname)
     .reduce<number>((a, c) => a + c.amount, 0);
   const othersSum = selections
-    .filter((s) => s.user !== MYNAME)
+    .filter((s) => s.user !== profile.nickname)
     .reduce<number>((a, c) => a + c.amount, 0);
   const totalIfSaved = othersSum + tempValue;
   const exceeds = totalIfSaved > quantity;
@@ -60,7 +61,7 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
     setTimeout(() => {
       setSavedMark(false);
       onClose();
-    }, 800);
+    }, 2000); // 2초간 체크 아이콘 노출
   };
 
   const commitCancel = () => {
@@ -69,7 +70,8 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
   };
   useEffect(() => {
     if (open) {
-      const latest = selections.find((s) => s.user === MYNAME)?.amount ?? 0;
+      const latest =
+        selections.find((s) => s.user === profile.nickname)?.amount ?? 0;
       setTempValue(latest);
       setAttemptedSave(false);
       setSavedMark(false);
@@ -117,7 +119,12 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
             </div>
             <HeaderActions>
               {savedMark ? (
-                <SavedIcon aria-label="저장됨" />
+                <FaRegCheckCircle
+                  color="#00d337"
+                  size={36}
+                  style={{ display: "block", marginRight: 2 }}
+                  aria-label="저장 완료"
+                />
               ) : (
                 <SaveButton
                   type="button"
@@ -138,7 +145,7 @@ const SettleupDrawer: React.FC<SettleupDrawerProps> = ({
           )}
           <List>
             {selections
-              .filter((sel) => sel.user !== MYNAME)
+              .filter((sel) => sel.user !== profile.nickname)
               .map((sel) => {
                 const formatted = Number.isInteger(sel.amount)
                   ? sel.amount.toString()
@@ -195,11 +202,7 @@ const DrawerContainer = styled.div<{ open: boolean }>`
   flex-direction: column;
   padding: 0 20px 20px;
   box-sizing: border-box;
-  /* height dynamic to avoid clipping when warning bar appears */
-  min-height: 260px;
-  max-height: 340px;
-  height: auto;
-  overflow: hidden;
+  height: 260px;
 `;
 
 const Inner = styled.div`
@@ -207,7 +210,6 @@ const Inner = styled.div`
   flex-direction: column;
   flex: 1;
   padding-top: 14px;
-  max-height: 100%;
 `;
 
 const HeaderRow = styled.div`
@@ -318,23 +320,4 @@ const TransparentOverlay = styled.div`
   inset: 0;
   background: transparent;
   z-index: 1000;
-`;
-
-const SavedIcon = styled(FaRegCheckCircle)`
-  font-size: 20px;
-  color: #0f9d58;
-  animation: pop 0.3s ease;
-  @keyframes pop {
-    0% {
-      transform: scale(0.4);
-      opacity: 0;
-    }
-    70% {
-      transform: scale(1.1);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
 `;

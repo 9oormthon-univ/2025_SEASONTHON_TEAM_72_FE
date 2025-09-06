@@ -17,12 +17,15 @@ const LayoutWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100dvh; /* dynamic viewport height for mobile browser UI */
   width: 100vw;
   background-color: #fffafa;
 `;
 const Main = styled.div`
   width: 390px;
-  height: 100vh;
+  height: 100%;
   background-color: white;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* allow inner pages to manage their own scroll */
 `;

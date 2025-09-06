@@ -6,6 +6,7 @@ const FinishSettleupPage = () => {
     <FinishSettleupPageLayout>
       <FinishImg src={finishImg} alt="정산완료 아이콘" />
       <FinishP>정산 완료!</FinishP>
+      <LoadingP>행운의 +{2}원 주인공을 뽑는중...</LoadingP>
     </FinishSettleupPageLayout>
   );
 };
@@ -36,3 +37,12 @@ const FinishP = styled.p`
   font-weight: 800;
   margin-top: 5px;
 `;
+
+const LoadingP = styled.p`
+  border: 0.5px solid white;
+  color: white;
+  background-color: transparent;
+  border-radius: 50px;
+  padding: 5px 40px;
+  font-size: 10px;
+`
