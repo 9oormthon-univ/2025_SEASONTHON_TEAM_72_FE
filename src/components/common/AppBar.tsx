@@ -15,7 +15,7 @@ const AppBar = () => {
         <IconButton aria-label="alarm" onClick={() => navigate(`/alarm`)}>
           <SmallIcon src={alarmIcon} alt="alarm" />
         </IconButton>
-        <IconButton aria-label="mypage">
+        <IconButton aria-label="mypage" onClick={() => navigate(`/mypage`)}>
           <SmallIcon src={mypageIcon} alt="mypage" />
         </IconButton>
       </Right>

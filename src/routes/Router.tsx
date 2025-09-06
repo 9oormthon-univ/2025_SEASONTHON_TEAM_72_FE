@@ -8,8 +8,8 @@ import FinishSettleupPage from "../pages/FinishSettleupPage";
 import HomePage from "../pages/HomePage";
 import AlarmPage from "../pages/AlarmPage";
 import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
+import MyPage from "../pages/MyPage";
 import Layout from "../components/Layout/Layout";
-
 const Router = () => {
   return (
     <BrowserRouter>
@@ -25,6 +25,7 @@ const Router = () => {
           <Route path="/review" element={<ReviewReceiptPage />} />
           <Route path="/finish" element={<FinishSettleupPage />} />
           <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
