@@ -9,6 +9,8 @@ import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { postParticipateCode } from "../apis/reviewReceiptApi";
 import LinkShareModal from "../components/ReviewReceipt/LinkShareModal";
+import BottomNav from "../components/common/BottomNav";
+import { useNavigate } from "react-router-dom";
 
 export const dummyDataMe = {
   user: "이채영",
@@ -51,9 +53,12 @@ export const dummyData2 = [
 ];
 
 const ReviewReceiptPage = () => {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shareCode, setShareCode] = useState<string | undefined>("ABC123");
-  const [shareUrl, setShareUrl] = useState<string | undefined>("https://www.naver.com");
+  const [shareUrl, setShareUrl] = useState<string | undefined>(
+    "https://www.naver.com"
+  );
   const [searchParams] = useSearchParams();
   const settlementIdParam = searchParams.get("settlementId");
   const settlementId = settlementIdParam
@@ -107,6 +112,11 @@ const ReviewReceiptPage = () => {
         code={shareCode}
         url={shareUrl ?? ""}
         onClose={() => setIsModalOpen(false)}
+      />
+      <BottomNav
+        description="밑으로 당겨서 새로고침할 수 있습니다."
+        primaryLabel="정산 완료하기"
+        onPrimaryClick={() => navigate("/finish")}
       />
     </ReviewReceiptPageLayout>
   );

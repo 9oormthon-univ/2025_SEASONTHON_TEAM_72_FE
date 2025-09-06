@@ -6,7 +6,7 @@ const FinishSettleupPage = () => {
     <FinishSettleupPageLayout>
       <FinishImg src={finishImg} alt="정산완료 아이콘" />
       <FinishP>정산 완료!</FinishP>
-      <LoadingP>행운의 +{2}원 주인공을 뽑는중...</LoadingP>
+      <LoadingP>행운의 +{34}원 주인공을 뽑는중...</LoadingP>
     </FinishSettleupPageLayout>
   );
 };
