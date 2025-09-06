@@ -1,5 +1,21 @@
-// src/apis/ocrApi.ts
-import axios, { type AxiosResponse } from 'axios';
+// ReceiptData를 백엔드로 전송하는 함수 추가 예시
+import axios from "axios";
+import type { AxiosResponse } from "axios";
+
+/**
+ * 영수증 데이터를 백엔드로 전송합니다.
+ * @param receiptData 파싱된 영수증 데이터
+ * @returns 서버 응답 데이터
+ */
+export async function sendReceiptDataToBackend(receiptData: ReceiptData) {
+  try {
+    const response = await axios.post("/api/v1/settlements/create", receiptData);
+    return response.data;
+  } catch (error) {
+    console.error("영수증 데이터 전송 실패:", error);
+    throw error;
+  }
+}
 
 // 네이버 클로바 OCR 영수증 특화모델 응답 타입
 export interface OCRResult {
