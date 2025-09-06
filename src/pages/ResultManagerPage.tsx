@@ -6,7 +6,6 @@ import { getReceiptListManager } from "../apis/reviewReceiptApi";
 import settlementManagerData from "../mocks/settlementManagerData.json";
 import type { ReceiptDataType } from "../types/receipt";
 
-
 const ResultManagerPage = () => {
   const myName = "이채영"; // TODO: 전역 데이터로 가져오기
   const [settlementData, setSettlementData] = useState<ReceiptDataType>(
@@ -54,9 +53,13 @@ const ResultManagerPage = () => {
             <>
               {ordered.filter(Boolean).map((entry) => (
                 <ReceiptDropdown
-                  key={entry!.user}
-                  initialPaid={entry!.is_paid}
-                  data={{ user: entry!.user, items: entry!.items }}
+                  key={entry?.user}
+                  initialPaid={entry?.paid}
+                  data={{
+                    user: entry!.user,
+                    userId: entry!.user_id,
+                    items: entry!.items,
+                  }}
                 />
               ))}
               <button onClick={trigger}>show floating alert</button>

@@ -6,12 +6,14 @@ export type ItemType = {
 
 export type DataType = {
   user: string;
-  is_paid: boolean;
+  user_id: number;
+  paid: boolean;
   items: ItemType[];
 };
 
-export  type ReceiptDataType = {
+export type ReceiptDataType = {
   title: string;
-  manager_id: number;
+  owner_id: number;
+  settlement_id: number;
   data: DataType[];
 };

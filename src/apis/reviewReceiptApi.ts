@@ -37,3 +37,48 @@ export const getBankList = async (managerId: number) => {
     throw error;
   }
 };
+
+// 참여자 기준 입금 상태 변경
+export const postChangeDepositState = async (
+  settlementId: number,
+  userId: number
+) => {
+  try {
+    const res = await axiosInstance.post("/api/v1/banks", {
+      params: { settlementId, userId },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("postChangeDepositState 에러", error);
+    throw error;
+  }
+};
+
+// 독촉하기
+export const postUrge = async (userId: number) => {
+  try {
+    const res = await axiosInstance.post("/api/v1/banks", {
+      params: { userId },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("postUrge 에러", error);
+    throw error;
+  }
+};
+
+// 관리자 기준 입금 상태 변경
+export const postChangeDepositStateManager = async (
+  settlementId: number,
+  userId: number
+) => {
+  try {
+    const res = await axiosInstance.post("/api/v1/banks", {
+      params: { settlementId, userId },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("postChangeDepositStateManager 에러", error);
+    throw error;
+  }
+};

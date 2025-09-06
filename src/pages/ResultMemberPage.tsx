@@ -61,8 +61,13 @@ const ResultMemberPage = () => {
               .filter(Boolean)
               .map((entry) => (
                 <ReceiptDropdown
-                  key={entry!.user}
-                  data={{ user: entry!.user, items: entry!.items }}
+                  key={entry?.user}
+                  initialPaid={entry?.paid}
+                  data={{
+                    user: entry!.user,
+                    userId: entry!.user_id,
+                    items: entry!.items,
+                  }}
                 />
               ));
           })()}
