@@ -1,34 +1,84 @@
 import styled from "styled-components";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import StartSettlementImage from "../../assets/images/start_settlement_img.svg";
+import { type OCRResult } from "../../apis/ocrApi";
 
 const StartSettlement = () => {
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // OCR 로딩 상태 관리
+  const [isOCRLoading, setIsOCRLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleLoadReceiptClick = () => {
     fileInputRef.current?.click();
   };
 
+  const handleDReceiptEditClick = () => {
+    navigate('/receiptedit');
+  };
+
+  const handleInvitationCodeClick = () => {
+    navigate('/invitationcode');
+  };
+
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-    const selectedFile = files[0];
-    
-    // 파일 크기 검증 (5MB 제한)
-    if (selectedFile.size > 5 * 1024 * 1024) {
-      alert('파일 크기가 너무 큽니다. 5MB 이하의 파일을 선택해주세요.');
-      return;
-    }
-    
-    // 파일 타입 검증
-    if (!selectedFile.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드 가능합니다.');
-      return;
-    }
-    
-    console.log("선택된 파일:", selectedFile);
+      const file = files[0];
+      
+      // 파일 크기 검증 (5MB 제한)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('파일 크기가 너무 큽니다. 5MB 이하의 파일을 선택해주세요.');
+        return;
+      }
+      
+      // 파일 타입 검증
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드 가능합니다.');
+        return;
+      }
+      
+      console.log("선택된 파일:", file);
+      
+      // OCR 로딩 시작
+      setSelectedFile(file);
+      setIsOCRLoading(true);
     }
   };
+
+  const handleOCRSuccess = (result: OCRResult) => {
+    console.log('OCR 성공:', result);
+    setIsOCRLoading(false);
+    setSelectedFile(null);
+    
+    // OCR 결과와 함께 다음 페이지로 이동
+    // 결과 데이터를 state로 전달하거나 context/store에 저장
+    navigate('/receiptconfirm', { 
+      state: { 
+        ocrResult: result,
+        imageFile: selectedFile 
+      } 
+    });
+  };
+
+  const handleOCRError = (error: string) => {
+    console.error('OCR 실패:', error);
+    setIsOCRLoading(false);
+    setSelectedFile(null);
+    
+    // 에러 알림
+    alert(`영수증 인식에 실패했습니다: ${error}`);
+  };
+
+  // OCR 로딩 중이면 로딩 화면 표시
+  if (isOCRLoading && selectedFile) {
+    navigate('/ocrloading', 
+      { state: { imageFile: selectedFile } })
+  }
 
   return (
     <StartSettlementLayout>
@@ -52,11 +102,11 @@ const StartSettlement = () => {
         <ActionButton onClick={handleLoadReceiptClick}>
           <ButtonText>영수증 불러오기</ButtonText>
         </ActionButton>
-        <ActionButton>
+        <ActionButton onClick={handleDReceiptEditClick}>
           <ButtonText>직접 작성하기</ButtonText>
         </ActionButton>
       </ButtonContainer>
-      <ParticipationCode>
+      <ParticipationCode onClick={handleInvitationCodeClick} role="button" tabIndex={0} onKeyPress={(e) => { if (e.key === 'Enter') handleInvitationCodeClick(); }}>
         <CodeText>참여코드를 갖고 계신가요?</CodeText>
       </ParticipationCode>
     </StartSettlementLayout>
