@@ -1,12 +1,24 @@
 import styled from "styled-components";
-import TopNav from "../common/TopNav";
-import BottomNav from "../common/BottomNav";
+import { useNavigate } from "react-router-dom";
 import { Receipt } from "../ReceiptConfirm/Receipt";
 import receiptData from "../../data/receiptData.json";
+import TopNav from "../../components/common/TopNav";
+import BottomNav from "../../components/common/BottomNav";
 
 const ReceiptConfirm = () => {
+  const navigate = useNavigate();
+
   const handleBackClick = () => {
-    // 뒤로가기 로직 구현
+    navigate("/startsettlement");
+  };
+
+  const handleEditClick = () => {
+    // 편집 페이지로 이동하는 로직
+    console.log("편집하기 클릭");
+  };
+
+  const handleSettlementClick = () => {
+    navigate("/selectpeoplecount"); 
   };
 
   return (
@@ -27,7 +39,9 @@ const ReceiptConfirm = () => {
       <BottomNav 
         description="추출된 영수증을 확인해 주세요."
         primaryLabel="편집하기"
+        onPrimaryClick={handleEditClick}
         secondaryLabel="정산하러 가기"
+        onSecondaryClick={handleSettlementClick}
       />
     </ReceiptLayout>
   );
