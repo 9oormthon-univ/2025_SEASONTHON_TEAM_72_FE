@@ -99,7 +99,7 @@ const ReceiptDropdown: React.FC<ReceiptDropdownProps> = ({
         {
           label: "입금 취소하기",
           color: "#f44336",
-          onClick: () => {
+          onClick: async () => {
             // TODO: 입금 상태 변경 api 연동
             setIsPaid(false);
             onStatusChange?.(false);
