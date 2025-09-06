@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import TopContent from "../ReceiptEdit/TopContent";
 import ItemAddButton from "./ItemAddButton";
@@ -14,10 +15,24 @@ interface ReceiptItem {
 }
 
 const ReceiptEdit = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState<ReceiptItem[]>([]);
   const [isEditingItem, setIsEditingItem] = useState(false);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  // 네비게이션 핸들러들
+  const handleBackClick = () => {
+    navigate('/startsettlement');
+  };
+
+  const handlePreviewClick = () => {
+    navigate('/receiptconfirm');
+  };
+
+  const handleSettlementClick = () => {
+    navigate('/selectpeoplecount');
+  };
 
   // 키보드 감지
   useEffect(() => {
@@ -115,7 +130,7 @@ const ReceiptEdit = () => {
         <TopContent 
           title="새로운 정산"
           showBackButton={true}
-          onBackClick={() => console.log('뒤로가기')}
+          onBackClick={handleBackClick}
         />
       </TopContentWrapper>
 
@@ -155,8 +170,8 @@ const ReceiptEdit = () => {
             description="수정된 영수증을 확인해 주세요."
             primaryLabel="미리보기"
             secondaryLabel="정산하러 가기"
-            onPrimaryClick={() => console.log('미리보기')}
-            onSecondaryClick={() => console.log('정산하러 가기')}
+            onPrimaryClick={handlePreviewClick}
+            onSecondaryClick={handleSettlementClick}
           />
         )}
       </BottomNavWrapper>

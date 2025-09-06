@@ -8,13 +8,8 @@ import BottomNav from "../../components/common/BottomNav";
 const ReceiptConfirm = () => {
   const navigate = useNavigate();
 
-  const handleBackClick = () => {
-    navigate("/startsettlement");
-  };
-
   const handleEditClick = () => {
-    // 편집 페이지로 이동하는 로직
-    console.log("편집하기 클릭");
+    navigate("/receiptedit"); 
   };
 
   const handleSettlementClick = () => {
@@ -25,8 +20,8 @@ const ReceiptConfirm = () => {
     <ReceiptLayout>
       <TopNav 
         title="영수증 미리보기"
-        showBackButton={true}
-        onBackClick={handleBackClick}
+        showBackButton={false}
+        onBackClick={() => {}}
       />
       <ReceiptContainer>
         {/* 더미데이터 사용 */}
