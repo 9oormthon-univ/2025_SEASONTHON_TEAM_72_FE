@@ -9,6 +9,8 @@ import HomePage from "../pages/HomePage";
 import AlarmPage from "../pages/AlarmPage";
 import HistoryPage from "../pages/HistoryPage";
 import ReceiptConfirmPage from "../pages/ReceiptConfirmPage";
+import SelectPeopleCountPage from "../pages/SelectPeopleCountPage";
+
 import Layout from "../components/Layout/Layout";
 
 const Router = () => {
@@ -28,6 +30,7 @@ const Router = () => {
           <Route path="/review" element={<ReviewReceiptPage />} />
           <Route path="/finish" element={<FinishSettleupPage />} />
           <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
+          <Route path="/selectpeoplecount" element={<SelectPeopleCountPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
