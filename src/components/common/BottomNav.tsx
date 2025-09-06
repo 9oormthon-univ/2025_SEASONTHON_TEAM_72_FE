@@ -65,7 +65,7 @@ const BarWrapper = styled.div`
 
 const DescriptionText = styled.span`
   color: #6b6b6b;
-  font-size: 10px;
+  font-size: 13px;
   font-family: "NanumSquare", sans-serif;
   font-weight: 700;
   line-height: 13px;

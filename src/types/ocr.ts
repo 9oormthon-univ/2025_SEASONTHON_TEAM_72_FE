@@ -30,4 +30,9 @@ export interface ProcessedReceiptData {
   // Keep raw OCR result for debugging or further processing
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rawData: any;
+}export interface ReceiptItem {
+  name: string;
+  count: number;
+  unitPrice: number;
+  totalPrice: number;
 }

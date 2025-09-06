@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ReceiptEditPage from "../pages/ReceiptEditPage";
 import InvitationCodePage from "../pages/InvitationCodePage";
 import StartSettlementPage from "../pages/StartSettlementPage";
 import ReviewReceiptPage from "../pages/ReviewReceiptPage";
@@ -24,7 +25,6 @@ const Router = () => {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/invitationcode" element={<InvitationCodePage />} />
           <Route path="/startsettlement" element={<StartSettlementPage />} />
-          <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />
           <Route path="/result/manager" element={<ResultManagerPage />} />
           <Route path="/result/member" element={<ResultMemberPage />} />
           <Route path="/review" element={<ReviewReceiptPage />} />
@@ -33,6 +33,7 @@ const Router = () => {
           <Route path="/ocrloading" element={<OCRLoadingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/selectpeoplecount" element={<SelectPeopleCountPage />} />
+          <Route path="/receiptedit" element={<ReceiptEditPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
