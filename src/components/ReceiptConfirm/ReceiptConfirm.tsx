@@ -12,7 +12,7 @@ const ReceiptConfirm = () => {
   return (
     <ReceiptLayout>
       <TopNav 
-        title="추출 결과"
+        title="영수증 미리보기"
         showBackButton={true}
         onBackClick={handleBackClick}
       />

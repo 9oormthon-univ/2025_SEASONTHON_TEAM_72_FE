@@ -1,29 +1,29 @@
 import styled from "styled-components";
-import TopNav from "../common/TopNav";
+import TopContent from "../ReceiptEdit/TopContent";
+import ReceiptItem from "./ReceiptItemButton";
+import ItemEditNav from "../ReceiptEdit/ItemEditNav";
 import BottomNav from "../common/BottomNav";
 
 const ReceiptEditContent = () => {
-  const handleBackClick = () => {
-    // 뒤로가기 로직 구현
-  };
-
   return (
     <ReceiptLayout>
-      <TopNav 
-        title="추출 편집"
-        showBackButton={true}
-        onBackClick={handleBackClick}
+      <TopContent 
+        title="새로운 정산"
+        showBackButton={false}
+        onBackClick={() => {}}
       />
-      <ReceiptContainer>
-        {/* 연동 예정  */}
-        
-      </ReceiptContainer>
+
       <BottomContentContainer>
+        <ReceiptItem />
       </BottomContentContainer>
+
       <BottomNav 
-                description="수정된 영수증을 확인해 주세요."
-                primaryLabel="정산하러 가기"
-            />
+        description="수정된 영수증을 확인해 주세요."
+        primaryLabel="미리보기"
+        secondaryLabel="정산하러 가기"
+      />
+      <ItemEditNav />
+
     </ReceiptLayout>
   );
 };
@@ -41,29 +41,13 @@ const ReceiptLayout = styled.div`
   position: relative;
 `;
 
-const ReceiptContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  flex: 1;
-  overflow-y: auto;
-  padding-bottom: 10px;
-  width: 100%;
-
-   &::-webkit-scrollbar {
-    width: 1px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-`;
-
 const BottomContentContainer = styled.div`
   position: absolute;
   bottom: 85px; /* BottomNav의 높이만큼 띄우기 (BottomNav 높이에 따라 조절 필요) */
   left: 0;
   width: 100%;
   z-index: 10; /* BottomNav보다 위에 오도록 z-index 설정 */
+  width: 100%;
 
   // ItemEditSheet 자체 스타일을 가져와서 적용
   & > div { // ItemEditSheet의 SheetContainer
