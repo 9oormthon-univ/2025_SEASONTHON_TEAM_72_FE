@@ -82,3 +82,14 @@ export const postChangeDepositStateManager = async (
     throw error;
   }
 };
+
+// 공유하기(참여코드생성)
+export const postParticipateCode = async (settlementId: number) => {
+  try {
+    const res = await axiosInstance.post(`/api/v1/settlements/${settlementId}/invites`);
+    return res.data;
+  } catch (error) {
+    console.error("postParticipateCode 에러", error);
+    throw error;
+  }
+};
