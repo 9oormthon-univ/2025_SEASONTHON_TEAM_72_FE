@@ -23,3 +23,15 @@ export const getCompletedSettlement = async (userId: string | number) => {
     throw error;
   }
 };
+
+export const getAlarmList = async (userId: string | number) => {
+  try {
+    const res = await axiosInstance.get("api/v1/notifications", {
+      params: { userId },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("알림리스트 get 에러", error);
+    throw error;
+  }
+};

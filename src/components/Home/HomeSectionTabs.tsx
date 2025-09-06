@@ -101,6 +101,8 @@ const HomeSectionTabs = () => {
               title={it.title}
               dueDate={formatDate(it.created_at as string)}
               status={label as StatusType}
+              settlementId={it.settlement_id}
+              role={it.role === "OWNER" ? "OWNER" : "MEMBER"}
             />
           );
         })}

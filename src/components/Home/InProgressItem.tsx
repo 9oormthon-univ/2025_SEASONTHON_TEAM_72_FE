@@ -1,4 +1,6 @@
 import styled, { css } from "styled-components";
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { IoCalendarClearOutline } from "react-icons/io5";
 import clockLoaderIcon from "../../assets/icons/clock_loader_icon.svg";
 import creditCardIcon from "../../assets/icons/credit_card_icon.svg";
@@ -11,16 +13,38 @@ interface InProgressItemProps {
   title: string;
   dueDate: string;
   status: StatusType;
+  settlementId: string;
+  role: "OWNER" | "MEMBER";
 }
 
 const InProgressItem: React.FC<InProgressItemProps> = ({
   title,
   dueDate,
   status,
+  settlementId,
+  role,
 }) => {
+  const navigate = useNavigate();
   const isDone = status === "종료";
+  const handleClick = useCallback(() => {
+    if (status === "정산진행중") {
+      navigate(
+        `/reviewReceipt?settlementId=${encodeURIComponent(settlementId)}`
+      );
+      return;
+    }
+    if (role === "OWNER") {
+      navigate(
+        `/result/manager?settlementId=${encodeURIComponent(settlementId)}`
+      );
+    } else {
+      navigate(
+        `/result/member?settlementId=${encodeURIComponent(settlementId)}`
+      );
+    }
+  }, [navigate, role, settlementId, status]);
   return (
-    <Card $done={isDone}>
+    <Card $done={isDone} onClick={handleClick} role="button" tabIndex={0}>
       <TopRow>{title}</TopRow>
       <BottomRow>
         <DueDateBox>
@@ -59,11 +83,12 @@ const Card = styled.div<{ $done?: boolean }>`
   gap: 6px;
   background: ${({ $done }) => ($done ? "#f0f0f0" : "#ffffff")};
   color: ${({ $done }) => ($done ? "#000" : "inherit")};
+  cursor: pointer;
 `;
 
 const TopRow = styled.div`
   font-size: 12px;
-  font-weight: 800; 
+  font-weight: 800;
   color: #000;
   line-height: 1.3;
   word-break: break-word;

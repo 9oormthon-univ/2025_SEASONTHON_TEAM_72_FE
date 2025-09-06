@@ -1,0 +1,56 @@
+[
+  {
+    "id": 4,
+    "type": "DEPOSIT_REMINDER",
+    "message": "[진행중 테스트방] 입금을 완료해주세요.",
+    "read": false,
+    "status": "IN_PROGRESS",
+    "role": "OWNER",
+    "created_at": "2025-09-06T04:36:59"
+  },
+  {
+    "id": 5,
+    "type": "DEPOSIT_REMINDER",
+    "message": "[치킨회식] 입금이 필요합니다.",
+    "read": false,
+    "status": "AWAITING_DEPOSIT",
+    "role": "MEMBER",
+    "created_at": "2025-09-05T21:10:12"
+  },
+  {
+    "id": 6,
+    "type": "SETTLEMENT_UPDATE",
+    "message": "[캠핑정산] 항목 수정이 필요해요.",
+    "read": true,
+    "status": "NEEDS_ATTENTION",
+    "role": "OWNER",
+    "created_at": "2025-09-04T18:22:30"
+  },
+  {
+    "id": 7,
+    "type": "SETTLEMENT_DONE",
+    "message": "[여행정산] 정산이 완료되었습니다.",
+    "read": false,
+    "status": "DONE",
+    "role": "MEMBER",
+    "created_at": "2025-09-03T09:05:44"
+  },
+  {
+    "id": 8,
+    "type": "DEPOSIT_REMINDER",
+    "message": "[스터디간식] 미입금 인원이 있습니다.",
+    "read": true,
+    "status": "AWAITING_DEPOSIT",
+    "role": "OWNER",
+    "created_at": "2025-09-02T13:47:00"
+  },
+  {
+    "id": 9,
+    "type": "PROGRESS_NOTICE",
+    "message": "[부서회식] 정산이 진행 중입니다.",
+    "read": false,
+    "status": "IN_PROGRESS",
+    "role": "MEMBER",
+    "created_at": "2025-09-01T08:15:20"
+  }
+]

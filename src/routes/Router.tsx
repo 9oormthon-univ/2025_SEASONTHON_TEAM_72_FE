@@ -22,7 +22,6 @@ const Router = () => {
           <Route path="/reviewreceipt" element={<ReviewReceiptPage />} />
           <Route path="/result/manager" element={<ResultManagerPage />} />
           <Route path="/result/member" element={<ResultMemberPage />} />
-          <Route path="/finishsettleup" element={<FinishSettleupPage />} />
           <Route path="/review" element={<ReviewReceiptPage />} />
           <Route path="/finish" element={<FinishSettleupPage />} />
           <Route path="/receiptconfirm" element={<ReceiptConfirmPage />} />
