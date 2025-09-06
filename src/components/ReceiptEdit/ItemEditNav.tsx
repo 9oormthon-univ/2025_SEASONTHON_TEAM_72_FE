@@ -12,6 +12,26 @@ type ItemEditNavProps = {
   onClose?: () => void;
 };
 
+type EditableFieldType = 'title' | 'count' | 'price';
+
+interface EditableFieldConfig {
+  type: EditableFieldType;
+  label: string;
+  value: string;
+  unit?: string;
+  inputType: 'text' | 'number';
+  placeholder?: string;
+  min?: string;
+  maxLength?: number;
+  onClick: () => void;
+  onSave?: () => void;
+  onKeyDown: (e: React.KeyboardEvent) => void;
+  onBlur: () => void;
+  onChange: (value: string) => void;
+  isEditing: boolean;
+  tempValue: string;
+}
+
 const ItemEditNav: React.FC<ItemEditNavProps> = ({
   title = "",
   count = "2",
@@ -28,9 +48,7 @@ const ItemEditNav: React.FC<ItemEditNavProps> = ({
   const [isKeyboardOpen, setIsKeyboardOpen] = useState<boolean>(false);
   
   // 편집 상태 관리
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [isEditingCount, setIsEditingCount] = useState(false);
-  const [isEditingPrice, setIsEditingPrice] = useState(false);
+  const [editingField, setEditingField] = useState<EditableFieldType | null>(null);
   
   // 임시 값 관리
   const [tempTitle, setTempTitle] = useState(title);
@@ -45,7 +63,7 @@ const ItemEditNav: React.FC<ItemEditNavProps> = ({
       const currentHeight = window.visualViewport?.height || window.innerHeight;
       const heightDiff = initialViewportHeight - currentHeight;
       
-      if (heightDiff > 150) { // 키보드가 올라온 것으로 판단 (150px 이상 차이)
+      if (heightDiff > 150) {
         setKeyboardHeight(heightDiff);
         setIsKeyboardOpen(true);
       } else {
@@ -54,14 +72,12 @@ const ItemEditNav: React.FC<ItemEditNavProps> = ({
       }
     };
 
-    // Visual Viewport API 지원 확인
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', handleViewportChange);
       return () => {
         window.visualViewport?.removeEventListener('resize', handleViewportChange);
       };
     } else {
-      // 대체 방법: window resize 이벤트 사용
       window.addEventListener('resize', handleViewportChange);
       return () => {
         window.removeEventListener('resize', handleViewportChange);
@@ -75,83 +91,196 @@ const ItemEditNav: React.FC<ItemEditNavProps> = ({
     }
   }, [isKeyboardOpen, keyboardHeight]);
 
-  // 제목 편집 관련 함수들
-  const handleTitleClick = () => {
-    setIsEditingTitle(true);
-    setTempTitle(title);
-  };
-
-  const handleTitleSave = () => {
-    if (onTitleChange && tempTitle.trim()) {
-      onTitleChange(tempTitle.trim());
+  // 공통 편집 함수들
+  const handleFieldClick = (field: EditableFieldType) => {
+    setEditingField(field);
+    switch (field) {
+      case 'title':
+        setTempTitle(title);
+        break;
+      case 'count':
+        setTempCount(count);
+        break;
+      case 'price':
+        setTempPrice(price);
+        break;
     }
-    setIsEditingTitle(false);
   };
 
-  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+  const handleFieldSave = (field: EditableFieldType) => {
+    let value = '';
+    let callback: ((value: string) => void) | undefined;
+
+    switch (field) {
+      case 'title':
+        value = tempTitle.trim();
+        callback = onTitleChange;
+        break;
+      case 'count':
+        value = tempCount.trim();
+        callback = onCountChange;
+        break;
+      case 'price':
+        value = tempPrice.trim();
+        callback = onPriceChange;
+        break;
+    }
+
+    if (callback && value) {
+      callback(value);
+    }
+    setEditingField(null);
+  };
+
+  const handleFieldKeyDown = (e: React.KeyboardEvent, field: EditableFieldType) => {
     if (e.key === 'Enter') {
-      handleTitleSave();
+      handleFieldSave(field);
     } else if (e.key === 'Escape') {
-      setTempTitle(title);
-      setIsEditingTitle(false);
+      // 원래 값으로 복원
+      switch (field) {
+        case 'title':
+          setTempTitle(title);
+          break;
+        case 'count':
+          setTempCount(count);
+          break;
+        case 'price':
+          setTempPrice(price);
+          break;
+      }
+      setEditingField(null);
     }
   };
 
-  const handleTitleBlur = () => {
-    handleTitleSave();
+  const handleFieldBlur = (field: EditableFieldType) => {
+    handleFieldSave(field);
   };
 
-  // 수량 편집 관련 함수들
-  const handleCountClick = () => {
-    setIsEditingCount(true);
-    setTempCount(count);
-  };
-
-  const handleCountSave = () => {
-    if (onCountChange && tempCount.trim()) {
-      onCountChange(tempCount.trim());
+  // EditableField 렌더링 컴포넌트
+  const EditableField: React.FC<{ config: EditableFieldConfig }> = ({ config }) => {
+    const {
+      type,
+      label,
+      value,
+      unit,
+      inputType,
+      placeholder,
+      min,
+      maxLength,
+      onClick,
+      // onSave, // <-- 이 줄을 삭제하거나 주석 처리합니다.
+      onKeyDown,
+      onBlur,
+      onChange,
+      isEditing,
+      tempValue
+    } = config;
+    
+    // 제목 필드는 특별한 스타일 적용
+    if (type === 'title') {
+      return (
+        <ItemTitleSection onClick={onClick}>
+          {isEditing ? (
+            <ItemTitleInput
+              type="text"
+              value={tempValue}
+              placeholder={placeholder}
+              onChange={(e) => onChange(e.target.value)}
+              onBlur={onBlur}
+              onKeyDown={onKeyDown}
+              autoFocus
+              maxLength={maxLength}
+            />
+          ) : (
+            <TitleRow>
+              <TitleText>
+                {value || placeholder}
+                <EditIcon onClick={(e) => {
+                  e.stopPropagation();
+                  onClick();
+                }}>
+                  <img src="/src/assets/icons/edit_icon.svg" alt="Edit" />
+                </EditIcon>
+              </TitleText>
+            </TitleRow>
+          )}
+        </ItemTitleSection>
+      );
     }
-    setIsEditingCount(false);
+
+    // 일반 필드 (수량, 가격)
+    return (
+      <DetailRow onClick={onClick}>
+        <DetailLabel>{label}</DetailLabel>
+        {isEditing ? (
+          <DetailInput
+            type={inputType}
+            value={tempValue}
+            onChange={(e) => onChange(e.target.value)}
+            onBlur={onBlur}
+            onKeyDown={onKeyDown}
+            autoFocus
+            min={min}
+            placeholder={placeholder}
+          />
+        ) : (
+          <DetailValueContainer>
+            <DetailValue>{value} {unit}</DetailValue>
+            <Chevron>〉</Chevron>
+          </DetailValueContainer>
+        )}
+      </DetailRow>
+    );
   };
 
-  const handleCountKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleCountSave();
-    } else if (e.key === 'Escape') {
-      setTempCount(count);
-      setIsEditingCount(false);
+  // 필드 설정 배열
+  const fieldConfigs: EditableFieldConfig[] = [
+    {
+      type: 'title',
+      label: '제목',
+      value: title,
+      inputType: 'text',
+      placeholder: "품목명을 입력해 주세요",
+      maxLength: 50,
+      onClick: () => handleFieldClick('title'),
+      onSave: () => handleFieldSave('title'),
+      onKeyDown: (e) => handleFieldKeyDown(e, 'title'),
+      onBlur: () => handleFieldBlur('title'),
+      onChange: setTempTitle,
+      isEditing: editingField === 'title',
+      tempValue: tempTitle
+    },
+    {
+      type: 'count',
+      label: '수량',
+      value: count,
+      unit: '개',
+      inputType: 'number',
+      min: '1',
+      onClick: () => handleFieldClick('count'),
+      onSave: () => handleFieldSave('count'),
+      onKeyDown: (e) => handleFieldKeyDown(e, 'count'),
+      onBlur: () => handleFieldBlur('count'),
+      onChange: setTempCount,
+      isEditing: editingField === 'count',
+      tempValue: tempCount
+    },
+    {
+      type: 'price',
+      label: '가격',
+      value: price,
+      unit: '원',
+      inputType: 'text',
+      placeholder: '0',
+      onClick: () => handleFieldClick('price'),
+      onSave: () => handleFieldSave('price'),
+      onKeyDown: (e) => handleFieldKeyDown(e, 'price'),
+      onBlur: () => handleFieldBlur('price'),
+      onChange: setTempPrice,
+      isEditing: editingField === 'price',
+      tempValue: tempPrice
     }
-  };
-
-  const handleCountBlur = () => {
-    handleCountSave();
-  };
-
-  // 가격 편집 관련 함수들
-  const handlePriceClick = () => {
-    setIsEditingPrice(true);
-    setTempPrice(price);
-  };
-
-  const handlePriceSave = () => {
-    if (onPriceChange && tempPrice.trim()) {
-      onPriceChange(tempPrice.trim());
-    }
-    setIsEditingPrice(false);
-  };
-
-  const handlePriceKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handlePriceSave();
-    } else if (e.key === 'Escape') {
-      setTempPrice(price);
-      setIsEditingPrice(false);
-    }
-  };
-
-  const handlePriceBlur = () => {
-    handlePriceSave();
-  };
+  ];
 
   return (
     <>
@@ -165,74 +294,11 @@ const ItemEditNav: React.FC<ItemEditNavProps> = ({
           <img src="src\assets\icons\cancel_icon.svg" alt="Close" />
         </CloseButton>
         
-        <ItemTitleSection onClick={handleTitleClick}>
-          {isEditingTitle ? (
-            <ItemTitleInput
-              type="text"
-              value={tempTitle}
-              placeholder="품목명을 입력해 주세요"
-              onChange={(e) => setTempTitle(e.target.value)}
-              onBlur={handleTitleBlur}
-              onKeyDown={handleTitleKeyDown}
-              autoFocus
-              maxLength={50}
-            />
-          ) : (
-            <TitleRow>
-              <TitleText>
-                {title || "품목명을 입력해 주세요"}
-                <EditIcon onClick={(e) => {
-                  e.stopPropagation();
-                  handleTitleClick();
-                }}>
-                  <img src="/src/assets/icons/edit_icon.svg" alt="Edit" />
-                </EditIcon>
-              </TitleText>
-            </TitleRow>
-          )}
-        </ItemTitleSection>
+        {fieldConfigs.map((config) => (
+          <EditableField key={config.type} config={config} />
+        ))}
 
-        <DetailRow onClick={handleCountClick}>
-          <DetailLabel>수량</DetailLabel>
-          {isEditingCount ? (
-            <DetailInput
-              type="number"
-              value={tempCount}
-              onChange={(e) => setTempCount(e.target.value)}
-              onBlur={handleCountBlur}
-              onKeyDown={handleCountKeyDown}
-              autoFocus
-              min="1"
-            />
-          ) : (
-            <DetailValueContainer>
-              <DetailValue>{count} 개</DetailValue>
-              <Chevron>〉</Chevron>
-            </DetailValueContainer>
-          )}
-        </DetailRow>
-        
-        <DetailRow onClick={handlePriceClick}>
-          <DetailLabel>가격</DetailLabel>
-          {isEditingPrice ? (
-            <DetailInput
-              type="text"
-              value={tempPrice}
-              onChange={(e) => setTempPrice(e.target.value)}
-              onBlur={handlePriceBlur}
-              onKeyDown={handlePriceKeyDown}
-              autoFocus
-              placeholder="0"
-            />
-          ) : (
-            <DetailValueContainer>
-              <DetailValue>{price} 원</DetailValue>
-              <Chevron>〉</Chevron>
-            </DetailValueContainer>
-          )}
-        </DetailRow>
-
-        <SaveButton onClick={onSave}>저장하기</SaveButton>
+        <SaveButton onClick={() => { if (onSave) onSave(); }}>저장하기</SaveButton>
       </BarWrapper>
     </>
   );
@@ -258,15 +324,10 @@ const BarWrapper = styled.div<{ $isKeyboardOpen: boolean; $keyboardHeight: numbe
   gap: 12px;
   z-index: 10;
   
-  /* 키보드 상태에 따른 위치 조정 */
   bottom: ${props => props.$isKeyboardOpen ? `${Math.max(props.$keyboardHeight - 100, 0)}px` : '0'};
-  
-  /* 부드러운 애니메이션 */
   transition: bottom 0.3s ease-out;
   
-  /* iOS Safari에서 키보드 올라올 때 추가 조정 */
   @supports (-webkit-appearance: none) {
-    /* iOS Safari 전용 스타일 */
     ${props => props.$isKeyboardOpen && `
       position: absolute;
       bottom: auto;
@@ -274,7 +335,6 @@ const BarWrapper = styled.div<{ $isKeyboardOpen: boolean; $keyboardHeight: numbe
     `}
   }
   
-  /* 작은 화면에서 키보드가 올라올 때 추가 조정 */
   @media (max-height: 667px) {
     ${props => props.$isKeyboardOpen && `
       bottom: ${Math.max(props.$keyboardHeight - 120, 10)}px;
@@ -434,7 +494,6 @@ const DetailInput = styled.input`
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
   }
   
-  /* number input의 스피너 제거 */
   &[type="number"]::-webkit-outer-spin-button,
   &[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;

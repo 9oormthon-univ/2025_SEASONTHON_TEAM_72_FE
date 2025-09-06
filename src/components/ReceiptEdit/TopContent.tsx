@@ -8,31 +8,46 @@ export interface TopContentProps {
   onTitleChange?: (title: string) => void;
   onBackClick?: () => void;
   placeholder?: string;
+  showBackButton?: boolean;
 }
 
-const TopContent: React.FC<TopContentProps> = ({ 
-  title, 
+const TopContent: React.FC<TopContentProps> = ({
+  title,
   date = "",
   onDateChange,
   onTitleChange,
   onBackClick,
-  placeholder = "YYYY-MM-DD"
+  placeholder = "YYYY-MM-DD",
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [tempTitle, setTempTitle] = useState(title);
   const [tempDate, setTempDate] = useState(date);
 
-  // 제목 편집 모드 활성화
+  // 제목이 바뀌면 tempTitle도 동기화
+  React.useEffect(() => {
+    if (!isEditingTitle) setTempTitle(title);
+  }, [title, isEditingTitle]);
+
+  // 날짜가 바뀌면 tempDate도 동기화
+  React.useEffect(() => {
+    if (!isEditingDate) setTempDate(date);
+  }, [date, isEditingDate]);
+
+  // 제목 편집 모드 활성화 (편집 중이면 재진입 불가)
   const handleTitleContainerClick = () => {
-    setIsEditingTitle(true);
-    setTempTitle(title);
+    if (!isEditingTitle) {
+      setIsEditingTitle(true);
+      setTempTitle(title);
+    }
   };
 
-  // 날짜 편집 모드 활성화
+  // 날짜 편집 모드 활성화 (편집 중이면 재진입 불가)
   const handleDateContainerClick = () => {
-    setIsEditingDate(true);
-    setTempDate(date);
+    if (!isEditingDate) {
+      setIsEditingDate(true);
+      setTempDate(date);
+    }
   };
 
   // 제목 저장
@@ -53,18 +68,18 @@ const TopContent: React.FC<TopContentProps> = ({
 
   // 키보드 이벤트 처리
   const handleTitleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleTitleSave();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setTempTitle(title);
       setIsEditingTitle(false);
     }
   };
 
   const handleDateKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleDateSave();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setTempDate(date);
       setIsEditingDate(false);
     }
@@ -79,7 +94,7 @@ const TopContent: React.FC<TopContentProps> = ({
     handleDateSave();
   };
 
-  // 20자 제한
+  // 20자 제한 (표시할 때는 항상 prop으로 받은 title을 사용)
   const displayTitle = title.length > 20 ? title.slice(0, 20) : title;
 
   return (
@@ -102,19 +117,21 @@ const TopContent: React.FC<TopContentProps> = ({
           ) : (
             <Title title={title}>
               {displayTitle}
-              <EditButton onClick={(e) => {
-                e.stopPropagation();
-                handleTitleContainerClick();
-              }}>
+              <EditButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleTitleContainerClick();
+                }}
+              >
                 <img src="/src/assets/icons/edit_icon.svg" alt="Edit" />
               </EditButton>
             </Title>
           )}
         </TitleContainer>
-        
+
         <PlaceholderDiv />
       </TopNavContainer>
-      
+
       <DateNavContainer>
         <DateContainer onClick={handleDateContainerClick}>
           {isEditingDate ? (
@@ -131,17 +148,19 @@ const TopContent: React.FC<TopContentProps> = ({
               <DateRow>
                 <DateText>{date || placeholder}</DateText>
               </DateRow>
-              <CalendarButton onClick={(e) => {
-                e.stopPropagation();
-                handleDateContainerClick();
-              }}>
+              <CalendarButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDateContainerClick();
+                }}
+              >
                 <img src="/src/assets/icons/calendar_icon.svg" alt="Calendar" />
               </CalendarButton>
             </>
           )}
         </DateContainer>
       </DateNavContainer>
-      
+
       <Divider />
     </TopContentContainer>
   );
@@ -165,20 +184,20 @@ const TopNavContainer = styled.div`
   height: 30px;
 `;
 
-const BackButton = styled.div` 
+const BackButton = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
   padding: 8px;
   min-width: 30px; /* 최소 너비 보장 */
-  
+
   &:hover {
     opacity: 0.7;
   }
 `;
 
 const PlaceholderDiv = styled.div`
-    min-width: 40px; /* BackButton과 동일한 최소 너비 */
+  min-width: 40px; /* BackButton과 동일한 최소 너비 */
 `;
 
 const DateNavContainer = styled.div`
@@ -200,7 +219,7 @@ const TitleContainer = styled.div`
   padding: 8px;
   border-radius: 8px;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.02);
   }
@@ -210,7 +229,7 @@ const Title = styled.h1`
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   color: #000;
   text-align: center;
   font-family: "NanumSquare", sans-serif;
@@ -228,7 +247,7 @@ const Title = styled.h1`
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
-    display: none; 
+    display: none;
   }
 `;
 
@@ -240,7 +259,7 @@ const EditButton = styled.div`
   padding-left: 4px;
   img {
     width: 12px;
-height: 12px;
+    height: 12px;
   }
   &:hover {
     opacity: 0.7;
@@ -263,7 +282,7 @@ const TitleInput = styled.input`
   outline: none;
   width: 100%;
   max-width: 300px;
-  
+
   &:focus {
     border-color: #0056b3;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
@@ -278,7 +297,7 @@ const DateContainer = styled.div`
   padding: 4px;
   border-radius: 8px;
   transition: all 0.2s ease;
-  
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.02);
   }
@@ -305,14 +324,14 @@ const DateText = styled.div`
 `;
 
 const CalendarButton = styled.div`
-margin-left: 3px
+  margin-left: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   img {
     width: 12px;
-height: 12px;
+    height: 12px;
   }
   &:hover {
     opacity: 0.7;
@@ -334,7 +353,7 @@ const DateInput = styled.input`
   background-color: #fff;
   outline: none;
   width: 140px;
-  
+
   &:focus {
     border-color: #0056b3;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
